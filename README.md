@@ -1,7 +1,7 @@
 # 🚀 NexusCore - Industrial IoT Sensor Management Platform
 
-[![.NET](https://img.shields.io/badge/.NET-8.0-blue)](https://dotnet.microsoft.com/download/dotnet/8.0)
-[![EF Core](https://img.shields.io/badge/EF%20Core-8.0-green)](https://docs.microsoft.com/en-us/ef/core/)
+[![.NET](https://img.shields.io/badge/.NET-9.0-blue)](https://dotnet.microsoft.com/download/dotnet/9.0)
+[![EF Core](https://img.shields.io/badge/EF%20Core-9.0-green)](https://docs.microsoft.com/en-us/ef/core/)
 [![ModBus](https://img.shields.io/badge/ModBus-RTU-orange)](https://modbus.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen)](https://github.com/yourusername/NexusCore/actions)
@@ -198,7 +198,449 @@ erDiagram
     MACHINE_CONFIG ||--o{ SENSOR : "configures"
 ```
 
-### 📊 Database Schema
+### 🔧 **MachineSensor Relationship (Arabic Explanation)**
+
+#### 📋 **ما هو MachineSensor؟**
+
+`MachineSensor` هو **جدول وسيط** (Intermediate Table) يربط بين الماكينة والأجهزة الاستشعارية. إنه يعمل كـ "جسر" يربط الماكينة بأجهزة الاستشعار الخاصة بها.
+
+#### 🎯 **الغرض منه:**
+
+| الجدول | الوظيفة | المثال |
+|---------|---------|---------|
+| **Machine** | يحتوي على معلومات الماكينة | اسم الماكينة، النموذج، التاريخ |
+| **MachineSensor** | يربط الماكينة بأجهزة الاستشعار | "الماكينة رقم 1 لديها 7 أجهزة استشعار" |
+| **Sensor** | يحتوي على معلومات أجهزة الاستشعار | درجة الحرارة، العنوان، النوع |
+
+#### 💡 **لماذا نحتاجه؟**
+
+1. **علاقة متعددة لمتعدد (Many-to-Many):**
+   - ماكينة واحدة يمكن أن تحتوي على عدة أجهزة استشعار
+   - جهاز استشعار واحد يمكن أن يستخدم في عدة ماكينات
+
+2. **إدارة مرنة:**
+   - إضافة جهاز استشعار جديد للماكينة
+   - إزالة جهاز استشعار من الماكينة
+   - نقل جهاز استشعار بين الماكينات
+
+3. **تتبع التاريخ:**
+   - متى تم تثبيت الجهاز؟
+   - متى تم إزالته؟
+   - من قام بالتثبيت؟
+
+#### 🚀 **مثال عملي في نظامك:**
+
+```sql
+-- جدول الماكينات
+CREATE TABLE Machines (
+    MachineId INT PRIMARY KEY,
+    MachineName NVARCHAR(100),
+    Model NVARCHAR(50),
+    InstallationDate DATE
+);
+
+-- جدول الربط
+CREATE TABLE MachineSensors (
+    MachineId INT,           -- معرف الماكينة
+    SensorId INT,            -- معرف جهاز الاستشعار
+    InstallationDate DATE,   -- تاريخ التثبيت
+    IsActive BIT,            -- هل يعمل؟
+    PRIMARY KEY (MachineId, SensorId)
+);
+
+-- جدول أجهزة الاستشعار
+CREATE TABLE Sensors (
+    SensorId INT PRIMARY KEY,
+    SensorName NVARCHAR(100),
+    SensorType NVARCHAR(50),
+    ModBusAddress INT
+);
+```
+
+#### 📊 **بيانات حقيقية:**
+
+```sql
+-- إدخال الماكينة
+INSERT INTO Machines VALUES (1, 'ماكينة الشوكولاتة', 'Daire-2024', '2024-01-15');
+
+-- ربط أجهزة الاستشعار بالماكينة
+INSERT INTO MachineSensors VALUES 
+(1, 1, '2024-01-15', 1),  -- Tank Bottom Temp
+(1, 2, '2024-01-15', 1),  -- Tank Wall Temp  
+(1, 3, '2024-01-15', 1),  -- Pump Temp
+(1, 4, '2024-01-15', 1),  -- Fountain Temp
+(1, 5, '2024-01-15', 1),  -- Pedal Sensor
+(1, 6, '2024-01-15', 1),  -- Cover Sensor
+(1, 7, '2024-01-15', 1);  -- E-Stop
+```
+
+#### 🎯 **فوائد في لوحة التحكم:**
+
+1. **عرض منظم:** "هذه الماكينة تحتوي على 7 أجهزة استشعار"
+2. **إدارة سهلة:** إضافة/إزالة أجهزة استشعار من الماكينة
+3. **تتبع الأداء:** أي جهاز استشعار يعمل وأيها لا يعمل
+4. **صيانة:** معرف متى تم تثبيت كل جهاز
+
+#### 🔄 **بديل مبسط:**
+
+إذا كنت لا تحتاج إلى تعقيد كبير، يمكنك استخدام **علاقة مباشرة**:
+
+```csharp
+public class Sensor
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int MachineId { get; set; }  // معرف الماكينة مباشرة
+    public Machine Machine { get; set; } // ربط مباشر
+}
+```
+
+**الخلاصة:** `MachineSensor` يساعدك في إدارة العلاقة بين الماكينة وأجهزة الاستشعار بطريقة مرنة ومنظمة! 🎉
+
+### 🏗️ **Complete Class Diagram Explanation**
+
+#### 📋 **Overview of All Classes**
+
+The NexusCore system consists of **8 main classes** that work together to create a comprehensive sensor management platform. Each class has a specific responsibility and contributes to the overall system architecture.
+
+#### 🔧 **1. SensorType Class**
+
+**Purpose:** Categorizes sensors into logical groups (Temperature, Digital, etc.)
+
+```csharp
+public class SensorType
+{
+    public int SensorTypeId { get; set; }        // Unique identifier
+    public string SensorTypeName { get; set; }   // "Temperature", "Digital"
+    public string Description { get; set; }      // Detailed explanation
+    public List<Sensor> Sensors { get; set; }    // All sensors of this type
+}
+```
+
+**Why We Need It:**
+- **Grouping:** Organize sensors by function (all temperature sensors together)
+- **Validation:** Apply type-specific rules (temperature ranges, digital states)
+- **Display:** Show appropriate UI controls for each sensor type
+- **Business Logic:** Handle type-specific operations
+- **Reporting:** Generate reports by sensor category
+
+**Real Example:**
+```csharp
+// Get all temperature sensors
+var tempSensors = await context.Sensors
+    .Where(s => s.SensorType.SensorTypeName == "Temperature")
+    .ToListAsync();
+
+// Get all safety sensors
+var safetySensors = await context.Sensors
+    .Where(s => s.SensorType.SensorTypeName == "Digital")
+    .ToListAsync();
+```
+
+#### 🌡️ **2. Sensor Class**
+
+**Purpose:** Represents ONE physical sensor device with its configuration
+
+```csharp
+public class Sensor
+{
+    public int Id { get; set; }                    // Unique sensor ID
+    public SensorTypeEnum SensorType { get; set; }  // TankBottomTemp, Pedal, etc.
+    public string Name { get; set; }                // "Tank Bottom Temperature"
+    public int ModBusAddress { get; set; }          // Address 8, 9, 10, 11
+    public MeasurementUnitType UnitType { get; set; } // Temperature=°C, Boolean=ON/OFF
+    public bool IsActive { get; set; } = true;      // Is it working?
+    public DateTime CreatedAt { get; set; }         // Installation date
+    
+    // Navigation properties
+    public ICollection<SensorReading> Readings { get; set; } // All readings
+}
+```
+
+**Key Properties Explained:**
+- **SensorType:** Specific sensor identity (TankBottomTemp, TankWallTemp, PumpTemp, FountainTemp, Pedal, Cover, EStop)
+- **ModBusAddress:** Physical hardware address for communication
+- **UnitType:** How to measure and display values
+- **IsActive:** Enable/disable sensor without deleting it
+
+**Real Example in Your System:**
+```csharp
+// Tank Bottom Temperature Sensor
+var tankBottomSensor = new Sensor
+{
+    Id = 1,
+    SensorType = SensorTypeEnum.TankBottomTemp,
+    Name = "Tank Bottom Temperature",
+    ModBusAddress = 8,
+    UnitType = MeasurementUnitType.Temperature,
+    IsActive = true
+};
+```
+
+#### 📊 **3. SensorReading Class**
+
+**Purpose:** Stores time-series data from sensors (temperature values, digital states)
+
+```csharp
+public class SensorReading
+{
+    public long Id { get; set; }           // Unique reading ID
+    public int SensorId { get; set; }      // Which sensor produced this reading
+    public DateTime Timestamp { get; set; } // When was it recorded
+    public decimal Value { get; set; }      // Actual reading (45.5°C, ON/OFF)
+    public bool IsValid { get; set; }      // Is this reading reliable?
+    
+    // Navigation property
+    public Sensor Sensor { get; set; }      // Link back to sensor
+}
+```
+
+**Why Separate from Sensor?**
+- **Performance:** Sensor table stays small, readings can be millions
+- **History:** Keep sensor configuration separate from historical data
+- **Flexibility:** Easy to add new reading properties without affecting sensors
+- **Cleanup:** Delete old readings without losing sensor configuration
+
+**Real Example:**
+```csharp
+// Record a temperature reading
+var reading = new SensorReading
+{
+    SensorId = 1,                    // Tank Bottom Temp sensor
+    Timestamp = DateTime.UtcNow,     // Current time
+    Value = 45.5m,                   // 45.5°C
+    IsValid = true                   // Reading is reliable
+};
+```
+
+#### 🏭 **4. Machine Class**
+
+**Purpose:** Represents a physical chocolate production machine
+
+```csharp
+public class Machine
+{
+    public int Id { get; set; }                    // Unique machine ID
+    public string Name { get; set; }                // "Chocolate Machine #1"
+    public string Model { get; set; }               // "Daire-2024"
+    public DateTime InstallationDate { get; set; }  // When installed
+    public bool IsActive { get; set; } = true;      // Is machine operational?
+    
+    // Navigation properties
+    public ICollection<Sensor> Sensors { get; set; } // All sensors on this machine
+}
+```
+
+**Real Example:**
+```csharp
+var chocolateMachine = new Machine
+{
+    Id = 1,
+    Name = "Chocolate Machine #1",
+    Model = "Daire-2024",
+    InstallationDate = new DateTime(2024, 1, 15),
+    IsActive = true
+};
+```
+
+#### 📝 **5. Recipe Class**
+
+**Purpose:** Stores chocolate production recipes with temperature targets
+
+```csharp
+public class Recipe
+{
+    public int Id { get; set; }                    // Unique recipe ID
+    public string Name { get; set; }                // "Dark Chocolate Premium"
+    public float TankTemp { get; set; }             // Target tank temperature
+    public float FountainTemp { get; set; }         // Target fountain temperature
+    public float MixerTemp { get; set; }            // Target mixer temperature
+    public bool Mixer { get; set; }                 // Enable mixer?
+    public bool Fountain { get; set; }              // Enable fountain?
+    public float HeatingGoal { get; set; }          // Heating target
+    public float CoolingGoal { get; set; }          // Cooling target
+    public float PouringGoal { get; set; }          // Pouring temperature
+}
+```
+
+**Real Example:**
+```csharp
+var darkChocolateRecipe = new Recipe
+{
+    Id = 1,
+    Name = "Dark Chocolate Premium",
+    TankTemp = 47.0f,           // 47°C for tank
+    FountainTemp = 45.0f,       // 45°C for fountain
+    MixerTemp = 46.0f,          // 46°C for mixer
+    Mixer = true,                // Enable mixer
+    Fountain = true,             // Enable fountain
+    HeatingGoal = 47.0f,        // Heat to 47°C
+    CoolingGoal = 45.0f,        // Cool to 45°C
+    PouringGoal = 45.0f         // Pour at 45°C
+};
+```
+
+#### ⚙️ **6. MachineConfig Class**
+
+**Purpose:** Stores machine safety limits and operational parameters
+
+```csharp
+public class MachineConfig
+{
+    public int Id { get; set; }                    // Unique config ID
+    public float TankMaxHeat { get; set; }          // Maximum tank temperature
+    public float PumpMaxHeat { get; set; }          // Maximum pump temperature
+    public int PumpDelay { get; set; }              // Pump activation delay (seconds)
+    public int MixerDelay { get; set; }             // Mixer activation delay (seconds)
+    public float AbsMaxTemp { get; set; }           // Absolute maximum temperature
+    public float AbsMinTemp { get; set; }           // Absolute minimum temperature
+}
+```
+
+**Real Example:**
+```csharp
+var machineConfig = new MachineConfig
+{
+    Id = 1,
+    TankMaxHeat = 65.0f,        // Tank can't exceed 65°C
+    PumpMaxHeat = 50.0f,        // Pump can't exceed 50°C
+    PumpDelay = 30,              // Wait 30 seconds before starting pump
+    MixerDelay = 45,             // Wait 45 seconds before starting mixer
+    AbsMaxTemp = 70.0f,          // System shutdown at 70°C
+    AbsMinTemp = -14.0f          // System shutdown at -14°C
+};
+```
+
+#### 🔌 **7. ModBusMaster Class**
+
+**Purpose:** Manages communication with PLC hardware via ModBus RTU protocol
+
+```csharp
+public class ModBusMaster
+{
+    public int Id { get; set; }                    // Unique ModBus instance ID
+    public string PortName { get; set; }            // "COM1", "COM2"
+    public int BaudRate { get; set; }               // 115200, 9600
+    public int SlaveAddress { get; set; }           // PLC address (usually 1)
+    public bool IsConnected { get; set; }           // Connection status
+    public DateTime LastCommunication { get; set; } // Last successful read
+    
+    // Methods for communication
+    public async Task<decimal> ReadHoldingRegisterAsync(int address);
+    public async Task<bool> ReadDigitalInputAsync(int address, int bit);
+    public async Task<bool> WriteHoldingRegisterAsync(int address, decimal value);
+}
+```
+
+**Real Example:**
+```csharp
+var modbusMaster = new ModBusMaster
+{
+    Id = 1,
+    PortName = "COM1",
+    BaudRate = 115200,
+    SlaveAddress = 1,
+    IsConnected = true
+};
+
+// Read temperature from Tank Bottom sensor (Address 8)
+var temperature = await modbusMaster.ReadHoldingRegisterAsync(8);
+Console.WriteLine($"Tank Bottom Temperature: {temperature}°C");
+
+// Read pedal state (Address 1, Bit 0)
+var pedalPressed = await modbusMaster.ReadDigitalInputAsync(1, 0);
+Console.WriteLine($"Pedal Pressed: {pedalPressed}");
+```
+
+#### 📊 **8. SensorReadingSummary Class**
+
+**Purpose:** Provides aggregated sensor data for dashboard display
+
+```csharp
+public class SensorReadingSummary
+{
+    public int SensorId { get; set; }               // Which sensor
+    public string SensorName { get; set; }           // Human-readable name
+    public decimal CurrentValue { get; set; }        // Latest reading
+    public decimal MinValue { get; set; }            // Minimum in period
+    public decimal MaxValue { get; set; }            // Maximum in period
+    public decimal AverageValue { get; set; }        // Average in period
+    public DateTime LastUpdate { get; set; }         // When last updated
+    public bool IsOnline { get; set; }               // Sensor status
+    public string Status { get; set; }               // "Normal", "Warning", "Error"
+}
+```
+
+**Real Example:**
+```csharp
+var tankBottomSummary = new SensorReadingSummary
+{
+    SensorId = 1,
+    SensorName = "Tank Bottom Temperature",
+    CurrentValue = 45.5m,        // Current: 45.5°C
+    MinValue = 44.2m,            // Min in last hour: 44.2°C
+    MaxValue = 46.8m,            // Max in last hour: 46.8°C
+    AverageValue = 45.3m,        // Average in last hour: 45.3°C
+    LastUpdate = DateTime.UtcNow, // Just updated
+    IsOnline = true,              // Sensor is working
+    Status = "Normal"             // Temperature is within range
+};
+```
+
+### 🔗 **How All Classes Work Together**
+
+#### 📊 **Data Flow Example:**
+
+1. **ModBusMaster** reads temperature from PLC (Address 8)
+2. **Sensor** provides configuration (Tank Bottom Temp, range -14°C to 65°C)
+3. **SensorReading** stores the value (45.5°C at 10:00:00)
+4. **SensorReadingSummary** calculates statistics (min, max, average)
+5. **Recipe** provides target temperature (47.0°C)
+6. **MachineConfig** enforces safety limits (max 65°C)
+7. **Machine** groups all sensors together
+8. **SensorType** categorizes as "Temperature" sensor
+
+#### 🎯 **Dashboard Display Example:**
+
+```csharp
+// Get all sensors for a machine
+var machine = await context.Machines
+    .Include(m => m.Sensors)
+    .ThenInclude(s => s.SensorType)
+    .FirstAsync(m => m.Id == 1);
+
+// Get current readings for all sensors
+var summaries = await context.Sensors
+    .Where(s => s.MachineId == machine.Id)
+    .Select(s => new SensorReadingSummary
+    {
+        SensorId = s.Id,
+        SensorName = s.Name,
+        CurrentValue = s.Readings.OrderByDescending(r => r.Timestamp).First().Value,
+        LastUpdate = s.Readings.OrderByDescending(r => r.Timestamp).First().Timestamp,
+        IsOnline = s.IsActive,
+        Status = GetSensorStatus(s) // Custom logic based on values and limits
+    })
+    .ToListAsync();
+
+// Display in dashboard
+foreach (var summary in summaries)
+{
+    Console.WriteLine($"{summary.SensorName}: {summary.CurrentValue}°C - {summary.Status}");
+}
+```
+
+### 🎨 **Class Diagram Benefits**
+
+1. **Clear Separation of Concerns:** Each class has one responsibility
+2. **Easy to Extend:** Add new sensor types, machines, or recipes
+3. **Type Safety:** Use enums instead of strings for sensor types
+4. **Performance:** Efficient queries with proper relationships
+5. **Maintainability:** Easy to understand and modify
+6. **Scalability:** Handle multiple machines and sensor types
+7. **Testing:** Each class can be tested independently
+
+This architecture gives you a **professional, enterprise-grade** sensor management system that's both powerful and easy to use! 🚀
 
 ```sql
 -- Sensors table (static information)
@@ -632,6 +1074,7 @@ SOFTWARE.
 - **LinkedIn**: (https://linkedin.com/in/nawafmahsoun)
 - **GitHub**: (https://github.com/nawafmahs)
 
+
 ### 🆘 Support Options
 - **Community Support**: GitHub Issues & Discussions
 - **Documentation**: Comprehensive guides and tutorials
@@ -649,13 +1092,17 @@ SOFTWARE.
 
 ## 🎯 Roadmap
 
-### 🚀 Version 0.6 (Q2 2024)
+### 🚀 Version 2.0 (Q2 2024)
 - [ ] AI-powered predictive maintenance
 - [ ] Advanced analytics dashboard
 - [ ] Mobile application support
 - [ ] Cloud deployment options
 
-
+### 🚀 Version 3.0 (Q4 2024)
+- [ ] Multi-tenant architecture
+- [ ] Advanced machine learning
+- [ ] IoT edge computing support
+- [ ] Industry 4.0 compliance
 
 ---
 
