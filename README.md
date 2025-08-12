@@ -1,7 +1,7 @@
 # 🚀 NexusCore - Industrial IoT Sensor Management Platform
 
-[![.NET](https://img.shields.io/badge/.NET-9.0-blue)](https://dotnet.microsoft.com/download/dotnet/9.0)
-[![EF Core](https://img.shields.io/badge/EF%20Core-9.0-green)](https://docs.microsoft.com/en-us/ef/core/)
+[![.NET](https://img.shields.io/badge/.NET-8.0-blue)](https://dotnet.microsoft.com/download/dotnet/8.0)
+[![EF Core](https://img.shields.io/badge/EF%20Core-8.0-green)](https://docs.microsoft.com/en-us/ef/core/)
 [![ModBus](https://img.shields.io/badge/ModBus-RTU-orange)](https://modbus.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen)](https://github.com/yourusername/NexusCore/actions)
@@ -587,6 +587,616 @@ var tankBottomSummary = new SensorReadingSummary
 };
 ```
 
+#### 📝 **9. MachineOperationLog Class**
+
+**Purpose:** Tracks all machine operations, events, and activities for audit and troubleshooting
+
+```csharp
+public class MachineOperationLog
+{
+    public long LogId { get; set; }                  // Unique log entry ID
+    public int MachineId { get; set; }               // Which machine
+    public EventTypeEnum EventType { get; set; }     // Type of event (NOT string!)
+    public string Description { get; set; }          // Detailed description
+    public DateTime LogTime { get; set; }            // When event occurred
+    public SeverityLevelEnum Severity { get; set; }  // Importance level (NOT string!)
+    public string OperatorName { get; set; }         // Who performed the action
+    public string AdditionalData { get; set; }       // JSON data for complex events
+    
+    // Navigation properties
+    public Machine Machine { get; set; }             // Link to machine
+}
+```
+
+**Why NOT Use Strings for EventType and Severity?**
+
+| المشكلة مع النصوص | الحل مع Enums | الفائدة |
+|-------------------|----------------|----------|
+| **أخطاء كتابية:** "Start" vs "start" vs "START" | `EventTypeEnum.Start` | لا يمكن الخطأ في الكتابة |
+| **صعوبة التطوير:** لا يعرف IDE الخيارات المتاحة | `EventTypeEnum.` + IntelliSense | اقتراحات تلقائية |
+| **صعوبة التحقق:** لا يمكن التأكد من صحة القيمة | قيم محددة مسبقاً | تحقق تلقائي من صحة البيانات |
+| **صعوبة الترجمة:** كل لغة تحتاج نصوص مختلفة | رموز موحدة | دعم متعدد اللغات |
+| **صعوبة التجميع:** "Start" و "start" يعتبران مختلفين | قيم موحدة | تجميع دقيق |
+
+#### 🎯 **EventTypeEnum - أنواع الأحداث**
+
+```csharp
+public enum EventTypeEnum
+{
+    // Machine Operations
+    MachineStart = 1,           // بدء تشغيل الماكينة
+    MachineStop = 2,            // إيقاف الماكينة
+    MachinePause = 3,           // إيقاف مؤقت
+    MachineResume = 4,          // استئناف التشغيل
+    
+    // Production Events
+    ProductionStart = 10,       // بدء الإنتاج
+    ProductionComplete = 11,    // اكتمال الإنتاج
+    BatchStart = 12,            // بدء دفعة جديدة
+    BatchComplete = 13,         // اكتمال الدفعة
+    
+    // Safety Events
+    EmergencyStop = 20,         // إيقاف طارئ
+    SafetyInterlock = 21,      // قفل أمان
+    CoverOpened = 22,           // فتح الغطاء
+    CoverClosed = 23,           // إغلاق الغطاء
+    
+    // Maintenance Events
+    MaintenanceStart = 30,      // بدء الصيانة
+    MaintenanceComplete = 31,   // اكتمال الصيانة
+    CalibrationStart = 32,     // بدء المعايرة
+    CalibrationComplete = 33,  // اكتمال المعايرة
+    
+    // Error Events
+    SensorError = 40,           // خطأ في جهاز الاستشعار
+    CommunicationError = 41,    // خطأ في الاتصال
+    TemperatureError = 42,      // خطأ في درجة الحرارة
+    SystemError = 43,           // خطأ في النظام
+    
+    // User Actions
+    UserLogin = 50,             // تسجيل دخول المستخدم
+    UserLogout = 51,            // تسجيل خروج المستخدم
+    RecipeChange = 52,          // تغيير الوصفة
+    SettingChange = 53,         // تغيير الإعدادات
+}
+```
+
+#### 🚨 **SeverityLevelEnum - مستويات الأهمية**
+
+```csharp
+public enum SeverityLevelEnum
+{
+    Info = 1,                   // معلومات عادية
+    Warning = 2,                // تحذير
+    Error = 3,                  // خطأ
+    Critical = 4,               // خطير
+    Fatal = 5                   // مميت
+}
+```
+
+#### 💡 **كيفية استخدام Enums بشكل احترافي**
+
+**1. إنشاء Extension Methods للترجمة:**
+```csharp
+public static class EventTypeExtensions
+{
+    public static string GetDisplayName(this EventTypeEnum eventType, string language = "ar")
+    {
+        return language switch
+        {
+            "ar" => eventType switch
+            {
+                EventTypeEnum.MachineStart => "بدء تشغيل الماكينة",
+                EventTypeEnum.MachineStop => "إيقاف الماكينة",
+                EventTypeEnum.EmergencyStop => "إيقاف طارئ",
+                EventTypeEnum.ProductionStart => "بدء الإنتاج",
+                EventTypeEnum.MaintenanceStart => "بدء الصيانة",
+                EventTypeEnum.SensorError => "خطأ في جهاز الاستشعار",
+                _ => eventType.ToString()
+            },
+            "en" => eventType switch
+            {
+                EventTypeEnum.MachineStart => "Machine Start",
+                EventTypeEnum.MachineStop => "Machine Stop",
+                EventTypeEnum.EmergencyStop => "Emergency Stop",
+                EventTypeEnum.ProductionStart => "Production Start",
+                EventTypeEnum.MaintenanceStart => "Maintenance Start",
+                EventTypeEnum.SensorError => "Sensor Error",
+                _ => eventType.ToString()
+            },
+            _ => eventType.ToString()
+        };
+    }
+    
+    public static string GetIcon(this EventTypeEnum eventType)
+    {
+        return eventType switch
+        {
+            EventTypeEnum.MachineStart => "🟢",
+            EventTypeEnum.MachineStop => "🔴",
+            EventTypeEnum.EmergencyStop => "🚨",
+            EventTypeEnum.ProductionStart => "🏭",
+            EventTypeEnum.MaintenanceStart => "🔧",
+            EventTypeEnum.SensorError => "⚠️",
+            _ => "ℹ️"
+        };
+    }
+}
+```
+
+**2. إنشاء Value Objects للبيانات الإضافية:**
+
+```csharp
+public class EventData
+{
+    public int? RecipeId { get; set; }              // معرف الوصفة (NOT string!)
+    public decimal Temperature { get; set; }
+    public int? OperatorId { get; set; }             // معرف المشغل (NOT string!)
+    public Dictionary<string, object> CustomData { get; set; }
+    
+    // Navigation properties
+    public Recipe Recipe { get; set; }               // ربط بالوصفة
+    public Operator Operator { get; set; }           // ربط بالمشغل
+}
+
+// استخدام في MachineOperationLog
+public class MachineOperationLog
+{
+    // ... existing properties ...
+    public EventData EventData { get; set; }        // بيانات إضافية منظمة
+}
+```
+
+**3. إنشاء جدول المشغلين (Operators):**
+
+```csharp
+public class Operator
+{
+    public int Id { get; set; }                      // معرف المشغل
+    public string Name { get; set; }                 // اسم المشغل
+    public string EmployeeId { get; set; }           // رقم الموظف
+    public string Department { get; set; }           // القسم
+    public bool IsActive { get; set; } = true;       // هل يعمل؟
+    public DateTime HireDate { get; set; }           // تاريخ التعيين
+    public string ContactNumber { get; set; }        // رقم الاتصال
+    public string Email { get; set; }                // البريد الإلكتروني
+    
+    // Navigation properties
+    public ICollection<MachineOperationLog> OperationLogs { get; set; }
+}
+```
+
+**4. تحديث جدول الوصفات (Recipes):**
+
+```csharp
+public class Recipe
+{
+    public int Id { get; set; }                      // معرف الوصفة
+    public string Name { get; set; }                 // اسم الوصفة
+    public string Code { get; set; }                 // رمز الوصفة
+    public string Description { get; set; }          // وصف الوصفة
+    public float TankTemp { get; set; }              // درجة حرارة الخزان
+    public float FountainTemp { get; set; }          // درجة حرارة النافورة
+    public float MixerTemp { get; set; }             // درجة حرارة الخلاط
+    public bool Mixer { get; set; }                  // تفعيل الخلاط؟
+    public bool Fountain { get; set; }               // تفعيل النافورة؟
+    public float HeatingGoal { get; set; }           // هدف التسخين
+    public float CoolingGoal { get; set; }           // هدف التبريد
+    public float PouringGoal { get; set; }           // درجة حرارة الصب
+    public bool IsActive { get; set; } = true;       // هل الوصفة نشطة؟
+    public DateTime CreatedAt { get; set; }          // تاريخ الإنشاء
+    public int CreatedByOperatorId { get; set; }     // من أنشأ الوصفة
+    
+    // Navigation properties
+    public Operator CreatedByOperator { get; set; }  // ربط بالمشغل المنشئ
+    public ICollection<MachineOperationLog> OperationLogs { get; set; }
+}
+```
+
+**3. إنشاء Service للتعامل مع الأحداث:**
+```csharp
+public interface IEventLogService
+{
+    Task LogEventAsync(int machineId, EventTypeEnum eventType, 
+                      SeverityLevelEnum severity, string description, 
+                      EventData eventData = null);
+    
+    Task<IEnumerable<MachineOperationLog>> GetEventsByTypeAsync(
+        int machineId, EventTypeEnum eventType, DateTime from, DateTime to);
+    
+    Task<IEnumerable<MachineOperationLog>> GetEventsBySeverityAsync(
+        int machineId, SeverityLevelEnum severity, DateTime from, DateTime to);
+}
+
+public class EventLogService : IEventLogService
+{
+    private readonly DbContext _context;
+    private readonly ILogger<EventLogService> _logger;
+    
+    public async Task LogEventAsync(int machineId, EventTypeEnum eventType, 
+                                  SeverityLevelEnum severity, string description, 
+                                  EventData eventData = null)
+    {
+        var logEntry = new MachineOperationLog
+        {
+            MachineId = machineId,
+            EventType = eventType,
+            Severity = severity,
+            Description = description,
+            LogTime = DateTime.UtcNow,
+            EventData = eventData,
+            OperatorName = GetCurrentOperatorName()
+        };
+        
+        _context.MachineOperationLogs.Add(logEntry);
+        await _context.SaveChangesAsync();
+        
+        // Log to system logger
+        _logger.LogInformation(
+            "Machine {MachineId} event: {EventType} - {Description}", 
+            machineId, eventType, description);
+    }
+}
+```
+
+#### 📊 **أمثلة عملية في نظامك**
+
+**1. تسجيل بدء الإنتاج:**
+```csharp
+await eventLogService.LogEventAsync(
+    machineId: 1,
+    eventType: EventTypeEnum.ProductionStart,
+    severity: SeverityLevelEnum.Info,
+    description: "بدء إنتاج شوكولاتة داكنة",
+    eventData: new EventData
+    {
+        RecipeId = 1,                    // معرف الوصفة من جدول الوصفات
+        Temperature = 47.0m,
+        OperatorId = 5                    // معرف المشغل من جدول المشغلين
+    }
+);
+```
+
+**2. استعلام الأحداث مع معلومات الوصفة والمشغل:**
+```csharp
+// الحصول على أحداث الإنتاج مع تفاصيل الوصفة والمشغل
+var productionEvents = await context.MachineOperationLogs
+    .Include(log => log.EventData)
+    .ThenInclude(ed => ed.Recipe)
+    .Include(log => log.EventData)
+    .ThenInclude(ed => ed.Operator)
+    .Where(log => log.EventType == EventTypeEnum.ProductionStart)
+    .Select(log => new
+    {
+        LogTime = log.LogTime,
+        RecipeName = log.EventData.Recipe.Name,           // اسم الوصفة من الجدول
+        RecipeCode = log.EventData.Recipe.Code,           // رمز الوصفة
+        OperatorName = log.EventData.Operator.Name,       // اسم المشغل من الجدول
+        OperatorDepartment = log.EventData.Operator.Department,
+        Temperature = log.EventData.Temperature,
+        Description = log.Description
+    })
+    .ToListAsync();
+
+// عرض النتائج
+foreach (var evt in productionEvents)
+{
+    Console.WriteLine($"الوصفة: {evt.RecipeName} ({evt.RecipeCode})");
+    Console.WriteLine($"المشغل: {evt.OperatorName} - {evt.OperatorDepartment}");
+    Console.WriteLine($"درجة الحرارة: {evt.Temperature}°C");
+    Console.WriteLine($"الوقت: {evt.LogTime}");
+    Console.WriteLine("---");
+}
+```
+
+**2. تسجيل خطأ في جهاز الاستشعار:**
+```csharp
+await eventLogService.LogEventAsync(
+    machineId: 1,
+    eventType: EventTypeEnum.SensorError,
+    severity: SeverityLevelEnum.Error,
+    description: "جهاز استشعار درجة الحرارة لا يستجيب",
+    eventData: new EventData
+    {
+        CustomData = new Dictionary<string, object>
+        {
+            ["SensorId"] = 1,
+            ["SensorName"] = "Tank Bottom Temperature",
+            ["LastReading"] = 45.5m,
+            ["ErrorCode"] = "SENSOR_TIMEOUT"
+        }
+    }
+);
+```
+
+**3. استعلام الأحداث حسب النوع:**
+```csharp
+// الحصول على جميع أحداث الإنتاج في آخر ساعة
+var productionEvents = await eventLogService.GetEventsByTypeAsync(
+    machineId: 1,
+    eventType: EventTypeEnum.ProductionStart,
+    from: DateTime.UtcNow.AddHours(-1),
+    to: DateTime.UtcNow
+);
+
+// الحصول على جميع الأخطاء الخطيرة
+var criticalEvents = await eventLogService.GetEventsBySeverityAsync(
+    machineId: 1,
+    severity: SeverityLevelEnum.Critical,
+    from: DateTime.UtcNow.AddDays(-7),
+    to: DateTime.UtcNow
+);
+```
+
+**4. إنشاء البيانات الأولية (Seed Data):**
+
+```csharp
+// إنشاء المشغلين
+var operators = new List<Operator>
+{
+    new Operator
+    {
+        Id = 1,
+        Name = "أحمد محمد",
+        EmployeeId = "EMP001",
+        Department = "الإنتاج",
+        HireDate = new DateTime(2023, 1, 15),
+        ContactNumber = "+966501234567",
+        Email = "ahmed.mohamed@company.com",
+        IsActive = true
+    },
+    new Operator
+    {
+        Id = 2,
+        Name = "فاطمة علي",
+        EmployeeId = "EMP002",
+        Department = "مراقبة الجودة",
+        HireDate = new DateTime(2023, 3, 20),
+        ContactNumber = "+966507654321",
+        Email = "fatima.ali@company.com",
+        IsActive = true
+    },
+    new Operator
+    {
+        Id = 3,
+        Name = "محمد حسن",
+        EmployeeId = "EMP003",
+        Department = "الصيانة",
+        HireDate = new DateTime(2023, 6, 10),
+        ContactNumber = "+966509876543",
+        Email = "mohamed.hassan@company.com",
+        IsActive = true
+    }
+};
+
+// إنشاء الوصفات
+var recipes = new List<Recipe>
+{
+    new Recipe
+    {
+        Id = 1,
+        Name = "Dark Chocolate Premium",
+        Code = "DC-PREMIUM-001",
+        Description = "شوكولاتة داكنة عالية الجودة",
+        TankTemp = 47.0f,
+        FountainTemp = 45.0f,
+        MixerTemp = 46.0f,
+        Mixer = true,
+        Fountain = true,
+        HeatingGoal = 47.0f,
+        CoolingGoal = 45.0f,
+        PouringGoal = 45.0f,
+        IsActive = true,
+        CreatedAt = DateTime.UtcNow,
+        CreatedByOperatorId = 1  // أحمد محمد
+    },
+    new Recipe
+    {
+        Id = 2,
+        Name = "Milk Chocolate Classic",
+        Code = "MC-CLASSIC-002",
+        Description = "شوكولاتة بالحليب كلاسيكية",
+        TankTemp = 46.0f,
+        FountainTemp = 44.0f,
+        MixerTemp = 45.0f,
+        Mixer = true,
+        Fountain = true,
+        HeatingGoal = 46.0f,
+        CoolingGoal = 44.0f,
+        PouringGoal = 44.0f,
+        IsActive = true,
+        CreatedAt = DateTime.UtcNow,
+        CreatedByOperatorId = 2  // فاطمة علي
+    },
+    new Recipe
+    {
+        Id = 3,
+        Name = "White Chocolate Deluxe",
+        Code = "WC-DELUXE-003",
+        Description = "شوكولاتة بيضاء فاخرة",
+        TankTemp = 45.0f,
+        FountainTemp = 43.0f,
+        MixerTemp = 44.0f,
+        Mixer = true,
+        Fountain = true,
+        HeatingGoal = 45.0f,
+        CoolingGoal = 43.0f,
+        PouringGoal = 43.0f,
+        IsActive = true,
+        CreatedAt = DateTime.UtcNow,
+        CreatedByOperatorId = 1  // أحمد محمد
+    }
+};
+
+// حفظ البيانات في قاعدة البيانات
+context.Operators.AddRange(operators);
+context.Recipes.AddRange(recipes);
+await context.SaveChangesAsync();
+```
+
+**5. استعلامات متقدمة:**
+
+```csharp
+// الحصول على جميع الوصفات التي أنشأها مشغل معين
+var ahmedRecipes = await context.Recipes
+    .Include(r => r.CreatedByOperator)
+    .Where(r => r.CreatedByOperator.Name == "أحمد محمد")
+    .ToListAsync();
+
+// الحصول على جميع الأحداث التي قام بها مشغل معين
+var fatimaEvents = await context.MachineOperationLogs
+    .Include(log => log.EventData)
+    .ThenInclude(ed => ed.Operator)
+    .Include(log => log.EventData)
+    .ThenInclude(ed => ed.Recipe)
+    .Where(log => log.EventData.Operator.Name == "فاطمة علي")
+    .ToListAsync();
+
+// الحصول على إحصائيات المشغلين
+var operatorStats = await context.MachineOperationLogs
+    .Include(log => log.EventData)
+    .ThenInclude(ed => ed.Operator)
+    .GroupBy(log => log.EventData.Operator.Name)
+    .Select(g => new
+    {
+        OperatorName = g.Key,
+        TotalEvents = g.Count(),
+        ProductionEvents = g.Count(e => e.EventType == EventTypeEnum.ProductionStart),
+        ErrorEvents = g.Count(e => e.Severity == SeverityLevelEnum.Error),
+        LastActivity = g.Max(e => e.LogTime)
+    })
+    .ToListAsync();
+```
+
+#### 🎨 **فوائد هذا التصميم**
+
+1. **Type Safety:** لا يمكن إدخال قيم غير صحيحة
+2. **IntelliSense:** اقتراحات تلقائية أثناء التطوير
+3. **Performance:** مقارنة أسرع من النصوص
+4. **Maintainability:** سهولة إضافة أنواع جديدة
+5. **Localization:** دعم متعدد اللغات
+6. **Validation:** تحقق تلقائي من صحة البيانات
+7. **Reporting:** تجميع وتحليل دقيق للأحداث
+8. **Data Integrity:** ربط البيانات بالجداول الصحيحة
+9. **Audit Trail:** تتبع كامل لمن أنشأ ماذا ومتى
+10. **Scalability:** سهولة إضافة مشغلين ووصفات جديدة
+
+#### 🗄️ **SQL Schema للجداول الجديدة**
+
+```sql
+-- جدول المشغلين
+CREATE TABLE Operators (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Name NVARCHAR(100) NOT NULL,
+    EmployeeId NVARCHAR(20) UNIQUE NOT NULL,
+    Department NVARCHAR(50) NOT NULL,
+    IsActive BIT DEFAULT 1,
+    HireDate DATE NOT NULL,
+    ContactNumber NVARCHAR(20),
+    Email NVARCHAR(100),
+    CreatedAt DATETIME2 DEFAULT GETUTCDATE()
+);
+
+-- جدول الوصفات (محدث)
+CREATE TABLE Recipes (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Name NVARCHAR(100) NOT NULL,
+    Code NVARCHAR(20) UNIQUE NOT NULL,
+    Description NVARCHAR(500),
+    TankTemp FLOAT NOT NULL,
+    FountainTemp FLOAT NOT NULL,
+    MixerTemp FLOAT NOT NULL,
+    Mixer BIT DEFAULT 1,
+    Fountain BIT DEFAULT 1,
+    HeatingGoal FLOAT NOT NULL,
+    CoolingGoal FLOAT NOT NULL,
+    PouringGoal FLOAT NOT NULL,
+    IsActive BIT DEFAULT 1,
+    CreatedAt DATETIME2 DEFAULT GETUTCDATE(),
+    CreatedByOperatorId INT NOT NULL,
+    FOREIGN KEY (CreatedByOperatorId) REFERENCES Operators(Id)
+);
+
+-- جدول سجل العمليات (محدث)
+CREATE TABLE MachineOperationLogs (
+    LogId BIGINT PRIMARY KEY IDENTITY(1,1),
+    MachineId INT NOT NULL,
+    EventType INT NOT NULL,  -- EventTypeEnum
+    Description NVARCHAR(500) NOT NULL,
+    LogTime DATETIME2 NOT NULL,
+    Severity INT NOT NULL,   -- SeverityLevelEnum
+    OperatorName NVARCHAR(100),  -- للتوافق مع النظام القديم
+    AdditionalData NVARCHAR(MAX), -- JSON data
+    FOREIGN KEY (MachineId) REFERENCES Machines(Id)
+);
+
+-- جدول بيانات الأحداث
+CREATE TABLE EventData (
+    Id BIGINT PRIMARY KEY IDENTITY(1,1),
+    LogId BIGINT NOT NULL,
+    RecipeId INT NULL,
+    Temperature DECIMAL(10,2) NULL,
+    OperatorId INT NULL,
+    CustomData NVARCHAR(MAX), -- JSON data
+    FOREIGN KEY (LogId) REFERENCES MachineOperationLogs(LogId),
+    FOREIGN KEY (RecipeId) REFERENCES Recipes(Id),
+    FOREIGN KEY (OperatorId) REFERENCES Operators(Id)
+);
+
+-- إنشاء الفهارس
+CREATE INDEX IX_Operators_EmployeeId ON Operators(EmployeeId);
+CREATE INDEX IX_Recipes_Code ON Recipes(Code);
+CREATE INDEX IX_Recipes_CreatedByOperatorId ON Recipes(CreatedByOperatorId);
+CREATE INDEX IX_MachineOperationLogs_MachineId ON MachineOperationLogs(MachineId);
+CREATE INDEX IX_MachineOperationLogs_EventType ON MachineOperationLogs(EventType);
+CREATE INDEX IX_MachineOperationLogs_LogTime ON MachineOperationLogs(LogTime);
+CREATE INDEX IX_EventData_RecipeId ON EventData(RecipeId);
+CREATE INDEX IX_EventData_OperatorId ON EventData(OperatorId);
+```
+
+#### 🔄 **مزايا الربط بدلاً من النصوص**
+
+| النهج القديم (نصوص) | النهج الجديد (روابط) | الفائدة |
+|---------------------|----------------------|----------|
+| `RecipeName = "Dark Chocolate"` | `RecipeId = 1` | **تحديث مركزي:** تغيير اسم الوصفة في مكان واحد |
+| `OperatorName = "أحمد محمد"` | `OperatorId = 1` | **تتبع التغييرات:** معرفة متى تم تغيير اسم المشغل |
+| **مشاكل:** أخطاء كتابية، تكرار، صعوبة التجميع | **حلول:** ربط دقيق، تحديث تلقائي، تجميع سهل | **نتيجة:** نظام أكثر دقة واحترافية |
+
+**هذا التصميم يعطيك نظام تسجيل أحداث احترافي ومتقدم! 🚀**
+
+**Purpose:** Provides aggregated sensor data for dashboard display
+
+```csharp
+public class SensorReadingSummary
+{
+    public int SensorId { get; set; }               // Which sensor
+    public string SensorName { get; set; }           // Human-readable name
+    public decimal CurrentValue { get; set; }        // Latest reading
+    public decimal MinValue { get; set; }            // Minimum in period
+    public decimal MaxValue { get; set; }            // Maximum in period
+    public decimal AverageValue { get; set; }        // Average in period
+    public DateTime LastUpdate { get; set; }         // When last updated
+    public bool IsOnline { get; set; }               // Sensor status
+    public string Status { get; set; }               // "Normal", "Warning", "Error"
+}
+```
+
+**Real Example:**
+```csharp
+var tankBottomSummary = new SensorReadingSummary
+{
+    SensorId = 1,
+    SensorName = "Tank Bottom Temperature",
+    CurrentValue = 45.5m,        // Current: 45.5°C
+    MinValue = 44.2m,            // Min in last hour: 44.2°C
+    MaxValue = 46.8m,            // Max in last hour: 46.8°C
+    AverageValue = 45.3m,        // Average in last hour: 45.3°C
+    LastUpdate = DateTime.UtcNow, // Just updated
+    IsOnline = true,              // Sensor is working
+    Status = "Normal"             // Temperature is within range
+};
+```
+
 ### 🔗 **How All Classes Work Together**
 
 #### 📊 **Data Flow Example:**
@@ -671,6 +1281,197 @@ ON SensorReadings(SensorId, Timestamp DESC);
 CREATE UNIQUE INDEX IX_Sensors_ModBusAddress 
 ON Sensors(ModBusAddress);
 ```
+
+## 🎛️ Dashboard Recipe Management
+
+### 📋 Recipe Control Workflow
+
+The NexusCore dashboard provides comprehensive recipe management capabilities, allowing operators to read, create, and modify machine parameters directly from the web interface.
+
+#### 🔄 **Dashboard Recipe Operations**
+
+| Operation | Description | Dashboard Action |
+|-----------|-------------|------------------|
+| **Read Recipe** | Display current recipe parameters | View recipe details, temperature settings, timing |
+| **Add Recipe** | Create new recipe in machine database | Form input → Validation → Database storage |
+| **Modify Parameters** | Update heating/cooling/pouring settings | Real-time parameter adjustment with validation |
+
+#### 🏗️ **Recipe Management Architecture**
+
+```mermaid
+graph TD
+    A[Dashboard UI] --> B[Recipe Service]
+    B --> C[Recipe Validation]
+    C --> D[Database Update]
+    D --> E[Machine Configuration]
+    E --> F[ModBus Communication]
+    F --> G[PLC Controller]
+    
+    H[Recipe Table] --> I[Recipe Service]
+    I --> J[Parameter Validation]
+    J --> K[MachineConfig Update]
+    K --> L[Real-time Control]
+```
+
+#### 📊 **Dashboard Recipe Interface**
+
+```csharp
+// Dashboard Recipe Controller
+[ApiController]
+[Route("api/[controller]")]
+public class RecipeController : ControllerBase
+{
+    [HttpGet]
+    public async Task<ActionResult<List<Recipe>>> GetAllRecipes()
+    {
+        // Read all recipes from database
+        var recipes = await _recipeService.GetAllRecipesAsync();
+        return Ok(recipes);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<Recipe>> CreateRecipe([FromBody] CreateRecipeDto dto)
+    {
+        // Add new recipe to machine database
+        var recipe = await _recipeService.CreateRecipeAsync(dto);
+        return CreatedAtAction(nameof(GetRecipe), new { id = recipe.Id }, recipe);
+    }
+
+    [HttpPut("{id}/parameters")]
+    public async Task<ActionResult> UpdateRecipeParameters(int id, [FromBody] UpdateParametersDto dto)
+    {
+        // Modify heating/cooling/pouring parameters
+        await _recipeService.UpdateRecipeParametersAsync(id, dto);
+        return NoContent();
+    }
+}
+```
+
+#### 🔧 **Recipe Parameter Modification**
+
+```csharp
+// Recipe Parameter Update Service
+public class RecipeParameterService
+{
+    public async Task UpdateHeatingParametersAsync(int recipeId, HeatingParametersDto dto)
+    {
+        var recipe = await _recipeRepository.GetByIdAsync(recipeId);
+        
+        // Update recipe parameters
+        recipe.HeatingTemperature = dto.Temperature;
+        recipe.HeatingDuration = dto.Duration;
+        recipe.HeatingRampRate = dto.RampRate;
+        
+        // Update machine configuration
+        var machineConfig = await _machineConfigService.GetActiveConfigAsync();
+        machineConfig.TankMaxHeat = dto.Temperature;
+        machineConfig.HeatingProfile = dto.Profile;
+        
+        // Save changes
+        await _unitOfWork.SaveChangesAsync();
+        
+        // Notify ModBus service of parameter changes
+        await _modBusService.UpdateHeatingParametersAsync(dto);
+    }
+}
+```
+
+#### 📱 **Dashboard UI Components**
+
+```csharp
+// Blazor Recipe Management Component
+@page "/recipes"
+@inject IRecipeService RecipeService
+
+<div class="recipe-management">
+    <h3>Recipe Management</h3>
+    
+    <!-- Recipe List -->
+    <div class="recipe-list">
+        @foreach (var recipe in recipes)
+        {
+            <div class="recipe-card">
+                <h4>@recipe.Name</h4>
+                <p>Code: @recipe.Code</p>
+                <p>Temperature: @recipe.HeatingTemperature°C</p>
+                <button @onclick="() => EditRecipe(recipe.Id)">Edit</button>
+            </div>
+        }
+    </div>
+    
+    <!-- Add New Recipe -->
+    <div class="add-recipe">
+        <h4>Add New Recipe</h4>
+        <EditForm Model="@newRecipe" OnValidSubmit="CreateRecipe">
+            <DataAnnotationsValidator />
+            <InputText @bind-Value="newRecipe.Name" placeholder="Recipe Name" />
+            <InputNumber @bind-Value="newRecipe.HeatingTemperature" placeholder="Temperature" />
+            <InputNumber @bind-Value="newRecipe.CoolingTemperature" placeholder="Cooling Temp" />
+            <InputNumber @bind-Value="newRecipe.PouringDuration" placeholder="Pouring Duration" />
+            <button type="submit">Create Recipe</button>
+        </EditForm>
+    </div>
+</div>
+```
+
+#### 🔄 **Real-time Parameter Updates**
+
+```csharp
+// SignalR Hub for Real-time Updates
+public class RecipeHub : Hub
+{
+    public async Task UpdateRecipeParameters(int recipeId, string parameter, object value)
+    {
+        // Update recipe in database
+        await _recipeService.UpdateParameterAsync(recipeId, parameter, value);
+        
+        // Update machine configuration
+        await _machineConfigService.UpdateParameterAsync(parameter, value);
+        
+        // Notify all connected clients
+        await Clients.All.SendAsync("RecipeParameterUpdated", recipeId, parameter, value);
+        
+        // Send command to ModBus service
+        await _modBusService.SendParameterUpdateAsync(parameter, value);
+    }
+}
+```
+
+#### 📊 **Recipe Validation & Safety**
+
+```csharp
+// Recipe Parameter Validation
+public class RecipeValidator : AbstractValidator<CreateRecipeDto>
+{
+    public RecipeValidator()
+    {
+        RuleFor(x => x.HeatingTemperature)
+            .InclusiveBetween(-14, 65)
+            .WithMessage("Temperature must be between -14°C and 65°C");
+            
+        RuleFor(x => x.CoolingTemperature)
+            .LessThan(x => x.HeatingTemperature)
+            .WithMessage("Cooling temperature must be lower than heating temperature");
+            
+        RuleFor(x => x.PouringDuration)
+            .InclusiveBetween(1, 300)
+            .WithMessage("Pouring duration must be between 1 and 300 seconds");
+    }
+}
+```
+
+#### 🎯 **Benefits of Dashboard Recipe Management**
+
+| Benefit | Description |
+|---------|-------------|
+| **Centralized Control** | All recipe operations from single interface |
+| **Real-time Updates** | Immediate parameter changes without restart |
+| **Validation & Safety** | Built-in parameter validation and limits |
+| **Audit Trail** | Complete history of recipe modifications |
+| **Operator Efficiency** | Quick recipe switching and parameter adjustment |
+| **Quality Control** | Consistent parameter application across batches |
+
+---
 
 ## 🚀 Getting Started
 
@@ -1070,10 +1871,10 @@ SOFTWARE.
 - **Specialization**: Industrial IoT & Chocolate Production Systems
 
 ### 📧 Contact Information
-- **Email**: nawafmahsoun11@gmail.com
-- **LinkedIn**: (https://linkedin.com/in/nawafmahsoun)
-- **GitHub**: (https://github.com/nawafmahs)
-
+- **Email**: [your-email@domain.com]
+- **LinkedIn**: [your-linkedin-profile]
+- **Website**: [your-website]
+- **GitHub**: [@yourusername](https://github.com/yourusername)
 
 ### 🆘 Support Options
 - **Community Support**: GitHub Issues & Discussions
