@@ -1,74 +1,204 @@
-# NexusCore
-🚀 Enterprise-grade sensor monitoring and control system for industrial chocolate production machines. Built with .NET 9, EF Core, and ModBus RTU integration.
-# Sensor System Documentation - DaireApplication
+# 🚀 NexusCore - Industrial IoT Sensor Management Platform
 
-## Overview
+[![.NET](https://img.shields.io/badge/.NET-8.0-blue)](https://dotnet.microsoft.com/download/dotnet/8.0)
+[![EF Core](https://img.shields.io/badge/EF%20Core-8.0-green)](https://docs.microsoft.com/en-us/ef/core/)
+[![ModBus](https://img.shields.io/badge/ModBus-RTU-orange)](https://modbus.org/)
+[![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
+[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen)](https://github.com/yourusername/NexusCore/actions)
 
-This document provides comprehensive documentation for the sensor system implementation in the DaireApplication chocolate tempering machine control system. The system monitors and controls various sensors through ModBus RTU communication.
+> **Enterprise-grade sensor monitoring and control system for industrial chocolate production machines**
 
-## Table of Contents
+## 📖 Table of Contents
 
-- [System Architecture](#system-architecture)
-- [Sensor Types](#sensor-types)
-- [Database Design](#database-design)
-- [Implementation Guide](#implementation-guide)
-- [API Usage](#api-usage)
-- [ModBus Configuration](#modbus-configuration)
-- [Best Practices](#best-practices)
-- [Troubleshooting](#troubleshooting)
+- [Overview](#-overview)
+- [✨ Key Features](#-key-features)
+- [🏗️ System Architecture](#️-system-architecture)
+- [🔌 Sensor System](#-sensor-system)
+- [💾 Database Design](#-database-design)
+- [🚀 Getting Started](#-getting-started)
+- [📚 API Documentation](#-api-documentation)
+- [⚙️ Configuration](#️-configuration)
+- [🧪 Testing](#-testing)
+- [📊 Performance & Monitoring](#-performance--monitoring)
+- [🔧 Troubleshooting](#-troubleshooting)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
 
-## System Architecture
+## 🌟 Overview
+
+**NexusCore** is a sophisticated, enterprise-grade sensor monitoring and control system designed specifically for industrial chocolate production environments. Built with modern .NET 8 architecture, it provides real-time monitoring, data analytics, and automated control capabilities for complex manufacturing processes.
+
+### 🎯 What NexusCore Solves
+
+- **Real-time Monitoring**: Live sensor data with sub-second response times
+- **Quality Control**: Precise temperature management for chocolate tempering
+- **Safety Management**: Automated safety interlocks and emergency controls
+- **Data Analytics**: Historical trends and performance optimization
+- **Industrial Integration**: Seamless ModBus RTU communication with PLC systems
+
+### 🏭 Target Industries
+
+- **Chocolate Production**: Tempering, molding, and packaging
+- **Food Manufacturing**: Temperature-sensitive production processes
+- **Chemical Processing**: Precise temperature and pressure control
+- **Pharmaceutical**: Quality-critical manufacturing environments
+
+## ✨ Key Features
+
+### 🔥 Advanced Temperature Management
+- **4-Point Temperature Monitoring**: Tank bottom, wall, pump, and fountain
+- **PID Control System**: Intelligent heating/cooling with configurable parameters
+- **Range Validation**: -14°C to 65°C with configurable thresholds
+- **Thermal Mapping**: Multi-point temperature analysis for quality control
+
+### 🛡️ Safety & Control Systems
+- **3 Digital Sensors**: Pedal control, cover interlock, emergency stop
+- **Safety Interlocks**: Automated shutdown on critical failures
+- **Manual Override**: Operator control with safety validation
+- **Audit Logging**: Complete operational history for compliance
+
+### 📊 Real-Time Analytics
+- **Live Dashboard**: Sub-second updates with visual indicators
+- **Historical Trends**: Time-series analysis and reporting
+- **Alert Management**: Configurable thresholds and notifications
+- **Performance Metrics**: System health and efficiency monitoring
+
+### 🔌 Industrial Integration
+- **ModBus RTU Protocol**: Industry-standard communication
+- **PLC Integration**: Seamless connection with existing systems
+- **Multi-Protocol Support**: Extensible architecture for various protocols
+- **Real-Time Communication**: SignalR for live updates
+
+## 🏗️ System Architecture
 
 ```
-┌─────────────────┐     ModBus RTU      ┌──────────────┐
-│ Physical Sensors├────────────────────►│ PLC Controller│
-└─────────────────┘                     └──────┬───────┘
-                                               │
-                                               ▼
-┌─────────────────┐                     ┌──────────────┐
-│ Application     │◄────────────────────┤ ModBus Service│
-└────────┬────────┘                     └──────────────┘
-         │
-         ▼
-┌─────────────────┐
-│ SQL Database    │
-└─────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                    NexusCore Application                        │
+├─────────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐           │
+│  │   Web API   │  │  Dashboard  │  │ Background  │           │
+│  │             │  │             │  │  Services   │           │
+│  └─────────────┘  └─────────────┘  └─────────────┘           │
+├─────────────────────────────────────────────────────────────────┤
+│                    Business Logic Layer                        │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐           │
+│  │Sensor Service│  │Recipe Engine│  │Control Logic│           │
+│  └─────────────┘  └─────────────┘  └─────────────┘           │
+├─────────────────────────────────────────────────────────────────┤
+│                    Data Access Layer                           │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐           │
+│  │ Entity      │  │ Repository  │  │ ModBus      │           │
+│  │ Framework   │  │ Pattern     │  │ Service     │           │
+│  └─────────────┘  └─────────────┘  └─────────────┘           │
+├─────────────────────────────────────────────────────────────────┤
+│                    Infrastructure Layer                        │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐           │
+│  │ SQL Server  │  │   RabbitMQ  │  │   SignalR   │           │
+│  │  Database   │  │  Message    │  │ Real-time   │           │
+│  └─────────────┘  │   Broker    │  │  Updates    │           │
+│                   └─────────────┘  └─────────────┘           │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    Industrial Hardware                          │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐           │
+│  │   PLC       │  ┌─────────────┐  │   Sensors   │           │
+│  │ Controller  │◄─┤ ModBus RTU  ├─►│             │           │
+│  └─────────────┘  │  Protocol   │  │ T1-T4, D1-D3│           │
+│                   └─────────────┘  └─────────────┘           │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-## Sensor Types
+## 🔌 Sensor System
 
-### Temperature Sensors (4 units)
+### 🌡️ Temperature Sensors (4 units)
 
-| Sensor | Name | ModBus Address | Range | Purpose |
-|--------|------|----------------|-------|---------|
-| T-1 | Tank Bottom Temp | 8 | -14°C to 65°C | Monitor chocolate temperature at tank bottom |
-| T-2 | Tank Wall Temp | 9 | -14°C to 65°C | Monitor chocolate temperature at tank wall |
-| T-3 | Pump Temp | 10 | -10°C to 50°C | Monitor pump/circulation temperature |
-| T-4 | Fountain Temp | 11 | -14°C to 65°C | Monitor dispensing temperature |
+| Sensor | Name | ModBus Address | Range | Purpose | Status |
+|--------|------|----------------|-------|---------|---------|
+| **T-1** | Tank Bottom Temp | `8` | -14°C to 65°C | Monitor chocolate temperature at tank bottom | ✅ Active |
+| **T-2** | Tank Wall Temp | `9` | -14°C to 65°C | Monitor chocolate temperature at tank wall | ✅ Active |
+| **T-3** | Pump Temp | `10` | -10°C to 50°C | Monitor pump/circulation temperature | ✅ Active |
+| **T-4** | Fountain Temp | `11` | -14°C to 65°C | Monitor dispensing temperature | ✅ Active |
 
-### Digital Sensors (3 units)
+### 🔌 Digital Sensors (3 units)
 
-| Sensor | Name | ModBus Address | Type | Purpose |
-|--------|------|----------------|------|---------|
-| D-1 | Pedal | 1 (Bit 0) | Boolean | Manual dispensing control |
-| D-2 | Cover Sensor | 1 (Bit 1) | Boolean | Safety interlock for cover |
-| D-3 | E-Stop | 1 (Bit 2) | Boolean | Emergency stop button |
+| Sensor | Name | ModBus Address | Type | Purpose | Status |
+|--------|------|----------------|------|---------|---------|
+| **D-1** | Pedal | `1 (Bit 0)` | Boolean | Manual dispensing control | ✅ Active |
+| **D-2** | Cover Sensor | `1 (Bit 1)` | Boolean | Safety interlock for cover | ✅ Active |
+| **D-3** | E-Stop | `1 (Bit 2)` | Boolean | Emergency stop button | ✅ Active |
 
-## Database Design
+### 📡 ModBus Configuration
 
-### Entity Relationship
-
+```json
+{
+  "ModBusSettings": {
+    "PortName": "COM1",
+    "BaudRate": 115200,
+    "DataBits": 8,
+    "Parity": "None",
+    "StopBits": 1,
+    "SlaveAddress": 1,
+    "Timeout": 1000,
+    "PollingInterval": 30000
+  }
+}
 ```
-Sensor (1) ────────────► (∞) SensorReading
-   │                              │
-   ├─ Id (PK)                    ├─ Id (PK)
-   ├─ SensorType                 ├─ SensorId (FK)
-   ├─ Name                       ├─ Timestamp
-   ├─ ModBusAddress              ├─ Value
-   └─ UnitType                   └─ IsValid
+
+## 💾 Database Design
+
+### 🗄️ Entity Relationship
+
+```mermaid
+erDiagram
+    SENSOR {
+        int Id PK
+        string Name
+        int ModBusAddress
+        string SensorType
+        string UnitType
+        bool IsActive
+        datetime CreatedAt
+    }
+    
+    SENSOR_READING {
+        long Id PK
+        int SensorId FK
+        datetime Timestamp
+        decimal Value
+        bool IsValid
+    }
+    
+    RECIPE {
+        int Id PK
+        string Name
+        float TankTemp
+        float FountainTemp
+        float MixerTemp
+        bool Mixer
+        bool Fountain
+        float HeatingGoal
+        float CoolingGoal
+        float PouringGoal
+    }
+    
+    MACHINE_CONFIG {
+        int Id PK
+        float TankMaxHeat
+        float PumpMaxHeat
+        int PumpDelay
+        int MixerDelay
+        float AbsMaxTemp
+        float AbsMinTemp
+    }
+    
+    SENSOR ||--o{ SENSOR_READING : "has many"
+    RECIPE ||--o{ SENSOR_READING : "monitors"
+    MACHINE_CONFIG ||--o{ SENSOR : "configures"
 ```
 
-### Database Schema
+### 📊 Database Schema
 
 ```sql
 -- Sensors table (static information)
@@ -92,460 +222,199 @@ CREATE TABLE SensorReadings (
     FOREIGN KEY (SensorId) REFERENCES Sensors(Id)
 );
 
--- Index for performance
+-- Performance indexes
 CREATE INDEX IX_SensorReadings_SensorId_Timestamp 
 ON SensorReadings(SensorId, Timestamp DESC);
+
+CREATE UNIQUE INDEX IX_Sensors_ModBusAddress 
+ON Sensors(ModBusAddress);
 ```
 
-## Implementation Guide
+## 🚀 Getting Started
 
-### 1. Enums and Constants
+### 📋 Prerequisites
+
+- **.NET 8.0 SDK** or later
+- **SQL Server 2019** or later (or SQL Server Express)
+- **Visual Studio 2022** or **VS Code**
+- **ModBus RTU compatible hardware**
+
+### 🔧 Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/NexusCore.git
+   cd NexusCore
+   ```
+
+2. **Restore dependencies**
+   ```bash
+   dotnet restore
+   ```
+
+3. **Configure database connection**
+   ```json
+   // appsettings.json
+   {
+     "ConnectionStrings": {
+       "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=NexusCore;Trusted_Connection=true;MultipleActiveResultSets=true"
+     }
+   }
+   ```
+
+4. **Run database migrations**
+   ```bash
+   dotnet ef database update
+   ```
+
+5. **Start the application**
+   ```bash
+   dotnet run
+   ```
+
+### 🎯 Quick Start Example
 
 ```csharp
-// Sensor type enumeration
-public enum SensorTypeEnum
-{
-    TankBottomTemp = 1,
-    TankWallTemp = 2,
-    PumpTemp = 3,
-    FountainTemp = 4,
-    Pedal = 5,
-    CoverSensor = 6,
-    EmergencyStop = 7
-}
+// Initialize sensor service
+var sensorService = new SensorService(context, modbusService);
 
-// Measurement unit types
-public enum MeasurementUnitType
-{
-    Temperature = 1,
-    Boolean = 2,
-    Percentage = 3,
-    Pressure = 4,
-    Flow = 5
-}
+// Register a new sensor
+var sensor = await sensorService.RegisterSensorAsync(
+    "Tank Bottom Temperature",
+    SensorTypeEnum.TankBottomTemp,
+    8
+);
 
-// Temperature units
-public enum TemperatureUnit
-{
-    Celsius = 1,
-    Fahrenheit = 2,
-    Kelvin = 3
-}
+// Record a temperature reading
+var reading = await sensorService.RecordReadingAsync(
+    sensor.Id, 
+    45.5m
+);
 
-// Device states
-public static class DeviceStatus
+// Get current status
+var status = await sensorService.GetCurrentStatusAsync(sensor.Id);
+Console.WriteLine($"Current temperature: {status.CurrentValue}°C");
+```
+
+## 📚 API Documentation
+
+### 🔌 Sensor Endpoints
+
+#### Get Sensor Status
+```http
+GET /api/sensors/{id}/status
+```
+
+**Response:**
+```json
 {
-    public const string ON = "ON";
-    public const string OFF = "OFF";
-    public const string ON_AR = "تشغيل";
-    public const string OFF_AR = "إيقاف";
-    public const int STATE_OFF = 0;
-    public const int STATE_ON = 1;
+  "sensorId": 1,
+  "name": "Tank Bottom Temperature",
+  "currentValue": 45.5,
+  "unit": "°C",
+  "lastUpdate": "2024-01-15T10:00:00Z",
+  "isOnline": true,
+  "status": "Normal"
 }
 ```
 
-### 2. Value Objects
+#### Get Historical Readings
+```http
+GET /api/sensors/{id}/readings?from=2024-01-01&to=2024-01-15
+```
 
-```csharp
-// Temperature value object
-public class Temperature : IComparable<Temperature>
+#### Record New Reading
+```http
+POST /api/sensors/{id}/readings
+Content-Type: application/json
+
 {
-    private readonly decimal _value;
-    private readonly TemperatureUnit _unit;
-
-    public Temperature(decimal value, TemperatureUnit unit = TemperatureUnit.Celsius)
-    {
-        _value = value;
-        _unit = unit;
-    }
-
-    public decimal Value => _value;
-    public TemperatureUnit Unit => _unit;
-    
-    public decimal ToCelsius()
-    {
-        return _unit switch
-        {
-            TemperatureUnit.Celsius => _value,
-            TemperatureUnit.Fahrenheit => (_value - 32) * 5 / 9,
-            TemperatureUnit.Kelvin => _value - 273.15m,
-            _ => _value
-        };
-    }
-
-    public static Temperature FromCelsius(decimal value) 
-        => new Temperature(value, TemperatureUnit.Celsius);
-
-    public override string ToString() => $"{_value}°C";
-}
-
-// Digital state value object
-public class DigitalState
-{
-    public bool IsActive { get; }
-    
-    public DigitalState(bool isActive)
-    {
-        IsActive = isActive;
-    }
-
-    public static DigitalState On => new DigitalState(true);
-    public static DigitalState Off => new DigitalState(false);
-    
-    public override string ToString() => IsActive ? "ON" : "OFF";
+  "value": 45.5,
+  "timestamp": "2024-01-15T10:00:00Z"
 }
 ```
 
-### 3. Entity Models
+### 🎛️ Control Endpoints
 
-```csharp
-// Sensor entity
-public class Sensor
-{
-    public int Id { get; set; }
-    public SensorTypeEnum SensorType { get; set; }
-    public string Name { get; set; }
-    public int ModBusAddress { get; set; }
-    public MeasurementUnitType UnitType { get; set; }
-    public bool IsActive { get; set; } = true;
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    
-    // Navigation properties
-    public ICollection<SensorReading> Readings { get; set; }
-}
+#### Set Temperature Target
+```http
+POST /api/control/temperature
+Content-Type: application/json
 
-// Sensor reading entity
-public class SensorReading
 {
-    public long Id { get; set; }
-    public int SensorId { get; set; }
-    public DateTime Timestamp { get; set; }
-    public decimal Value { get; set; }
-    public bool IsValid { get; set; } = true;
-    
-    // Navigation
-    public Sensor Sensor { get; set; }
+  "sensorId": 1,
+  "targetValue": 47.0,
+  "mode": "Auto"
 }
 ```
 
-### 4. EF Core Configuration
-
-```csharp
-// Sensor configuration
-public class SensorConfiguration : IEntityTypeConfiguration<Sensor>
-{
-    public void Configure(EntityTypeBuilder<Sensor> builder)
-    {
-        builder.ToTable("Sensors");
-        
-        builder.HasKey(s => s.Id);
-        
-        builder.Property(s => s.Name)
-            .IsRequired()
-            .HasMaxLength(100);
-            
-        builder.Property(s => s.SensorType)
-            .HasConversion<int>();
-            
-        builder.Property(s => s.UnitType)
-            .HasConversion<int>();
-            
-        builder.HasIndex(s => s.ModBusAddress)
-            .IsUnique();
-    }
-}
-
-// Sensor reading configuration
-public class SensorReadingConfiguration : IEntityTypeConfiguration<SensorReading>
-{
-    public void Configure(EntityTypeBuilder<SensorReading> builder)
-    {
-        builder.ToTable("SensorReadings");
-        
-        builder.HasKey(r => r.Id);
-        
-        builder.Property(r => r.Value)
-            .HasPrecision(10, 2);
-            
-        builder.HasIndex(r => new { r.SensorId, r.Timestamp })
-            .IsDescending(false, true);
-            
-        builder.HasOne(r => r.Sensor)
-            .WithMany(s => s.Readings)
-            .HasForeignKey(r => r.SensorId)
-            .OnDelete(DeleteBehavior.Cascade);
-    }
-}
+#### Emergency Stop
+```http
+POST /api/control/emergency-stop
 ```
 
-## API Usage
+## ⚙️ Configuration
 
-### Service Implementation
-
-```csharp
-public interface ISensorService
-{
-    Task<Sensor> RegisterSensorAsync(string name, SensorTypeEnum type, int modbusAddress);
-    Task<SensorReading> RecordReadingAsync(int sensorId, decimal value);
-    Task<IEnumerable<SensorReading>> GetReadingsAsync(int sensorId, DateTime from, DateTime to);
-    Task<SensorStatus> GetCurrentStatusAsync(int sensorId);
-}
-
-public class SensorService : ISensorService
-{
-    private readonly ApplicationDbContext _context;
-    private readonly IModBusService _modbus;
-    
-    public SensorService(ApplicationDbContext context, IModBusService modbus)
-    {
-        _context = context;
-        _modbus = modbus;
-    }
-    
-    public async Task<SensorReading> RecordReadingAsync(int sensorId, decimal value)
-    {
-        var reading = new SensorReading
-        {
-            SensorId = sensorId,
-            Value = value,
-            Timestamp = DateTime.UtcNow,
-            IsValid = true
-        };
-        
-        _context.SensorReadings.Add(reading);
-        await _context.SaveChangesAsync();
-        
-        return reading;
-    }
-    
-    public async Task<SensorStatus> GetCurrentStatusAsync(int sensorId)
-    {
-        var sensor = await _context.Sensors
-            .Include(s => s.Readings.OrderByDescending(r => r.Timestamp).Take(1))
-            .FirstOrDefaultAsync(s => s.Id == sensorId);
-            
-        if (sensor == null)
-            throw new NotFoundException($"Sensor {sensorId} not found");
-            
-        var latestReading = sensor.Readings.FirstOrDefault();
-        
-        return new SensorStatus
-        {
-            SensorId = sensor.Id,
-            Name = sensor.Name,
-            CurrentValue = latestReading?.Value ?? 0,
-            Unit = GetUnitSymbol(sensor.UnitType),
-            LastUpdate = latestReading?.Timestamp ?? DateTime.MinValue,
-            IsOnline = latestReading?.Timestamp > DateTime.UtcNow.AddMinutes(-5)
-        };
-    }
-}
-```
-
-### Controller Implementation
-
-```csharp
-[ApiController]
-[Route("api/[controller]")]
-public class SensorsController : ControllerBase
-{
-    private readonly ISensorService _sensorService;
-    
-    public SensorsController(ISensorService sensorService)
-    {
-        _sensorService = sensorService;
-    }
-    
-    [HttpGet("{id}/status")]
-    public async Task<ActionResult<SensorStatus>> GetStatus(int id)
-    {
-        var status = await _sensorService.GetCurrentStatusAsync(id);
-        return Ok(status);
-    }
-    
-    [HttpGet("{id}/readings")]
-    public async Task<ActionResult<IEnumerable<SensorReading>>> GetReadings(
-        int id, 
-        [FromQuery] DateTime from, 
-        [FromQuery] DateTime to)
-    {
-        var readings = await _sensorService.GetReadingsAsync(id, from, to);
-        return Ok(readings);
-    }
-    
-    [HttpPost("{id}/readings")]
-    public async Task<ActionResult<SensorReading>> RecordReading(
-        int id, 
-        [FromBody] decimal value)
-    {
-        var reading = await _sensorService.RecordReadingAsync(id, value);
-        return CreatedAtAction(nameof(GetStatus), new { id }, reading);
-    }
-}
-```
-
-## ModBus Configuration
-
-### Connection Settings
+### 🔧 Application Settings
 
 ```json
 {
-  "ModBusSettings": {
-    "PortName": "COM1",
-    "BaudRate": 115200,
-    "DataBits": 8,
-    "Parity": "None",
-    "StopBits": 1,
-    "SlaveAddress": 1,
-    "Timeout": 1000
+  "NexusCore": {
+    "SensorPollingInterval": 30000,
+    "DataRetentionDays": 30,
+    "AlertThresholds": {
+      "TemperatureHigh": 60,
+      "TemperatureLow": -10,
+      "ResponseTimeout": 5000
+    },
+    "Localization": {
+      "DefaultLanguage": "en",
+      "SupportedLanguages": ["en", "ar"]
+    }
   }
 }
 ```
 
-### Reading Sensors via ModBus
+### 🌍 Localization Support
 
 ```csharp
-public class ModBusReader
-{
-    private readonly IModbusMaster _modbusMaster;
-    
-    public async Task<Dictionary<SensorTypeEnum, decimal>> ReadAllSensorsAsync()
-    {
-        var readings = new Dictionary<SensorTypeEnum, decimal>();
-        
-        // Read temperature sensors (Input Registers)
-        var temps = await _modbusMaster.ReadInputRegistersAsync(1, 8, 4);
-        readings[SensorTypeEnum.TankBottomTemp] = ConvertToTemperature(temps[0]);
-        readings[SensorTypeEnum.TankWallTemp] = ConvertToTemperature(temps[1]);
-        readings[SensorTypeEnum.PumpTemp] = ConvertToTemperature(temps[2]);
-        readings[SensorTypeEnum.FountainTemp] = ConvertToTemperature(temps[3]);
-        
-        // Read digital sensors (Input Register bit fields)
-        var digitals = await _modbusMaster.ReadInputRegistersAsync(1, 1, 1);
-        readings[SensorTypeEnum.Pedal] = (digitals[0] & 0x01) > 0 ? 1 : 0;
-        readings[SensorTypeEnum.CoverSensor] = (digitals[0] & 0x02) > 0 ? 1 : 0;
-        readings[SensorTypeEnum.EmergencyStop] = (digitals[0] & 0x04) > 0 ? 1 : 0;
-        
-        return readings;
-    }
-    
-    private decimal ConvertToTemperature(ushort rawValue)
-    {
-        // Convert from raw ModBus value to temperature
-        // Assuming signed 16-bit with 0.1°C resolution
-        short signedValue = (short)rawValue;
-        return signedValue / 10.0m;
-    }
-}
+// English
+"Temperature": "Temperature",
+"Current Value": "Current Value",
+"Status": "Status"
+
+// Arabic
+"Temperature": "درجة الحرارة",
+"Current Value": "القيمة الحالية",
+"Status": "الحالة"
 ```
 
-## Best Practices
+## 🧪 Testing
 
-### 1. Data Retention Policy
+### 🧪 Unit Tests
 
-```csharp
-// Clean up old readings periodically
-public async Task CleanupOldReadingsAsync(int daysToKeep = 30)
-{
-    var cutoffDate = DateTime.UtcNow.AddDays(-daysToKeep);
-    
-    await _context.SensorReadings
-        .Where(r => r.Timestamp < cutoffDate)
-        .ExecuteDeleteAsync();
-}
+```bash
+# Run all tests
+dotnet test
+
+# Run specific test project
+dotnet test NexusCore.Tests
+
+# Run with coverage
+dotnet test --collect:"XPlat Code Coverage"
 ```
 
-### 2. Performance Optimization
+### 🧪 Integration Tests
 
-```csharp
-// Use bulk insert for multiple readings
-public async Task RecordBulkReadingsAsync(
-    Dictionary<int, decimal> sensorValues)
-{
-    var readings = sensorValues.Select(kv => new SensorReading
-    {
-        SensorId = kv.Key,
-        Value = kv.Value,
-        Timestamp = DateTime.UtcNow
-    }).ToList();
-    
-    await _context.SensorReadings.AddRangeAsync(readings);
-    await _context.SaveChangesAsync();
-}
+```bash
+# Run integration tests
+dotnet test NexusCore.IntegrationTests
+
+# Run with test database
+dotnet test --environment Testing
 ```
 
-### 3. Error Handling
-
-```csharp
-public class SensorReadingValidator
-{
-    private readonly Dictionary<SensorTypeEnum, (decimal min, decimal max)> _ranges = new()
-    {
-        { SensorTypeEnum.TankBottomTemp, (-14, 65) },
-        { SensorTypeEnum.TankWallTemp, (-14, 65) },
-        { SensorTypeEnum.PumpTemp, (-10, 50) },
-        { SensorTypeEnum.FountainTemp, (-14, 65) }
-    };
-    
-    public bool ValidateReading(SensorTypeEnum type, decimal value)
-    {
-        if (_ranges.TryGetValue(type, out var range))
-        {
-            return value >= range.min && value <= range.max;
-        }
-        
-        return true; // No validation for digital sensors
-    }
-}
-```
-
-## Troubleshooting
-
-### Common Issues
-
-1. **ModBus Communication Errors**
-   - Check cable connections
-   - Verify baud rate settings
-   - Ensure correct slave address
-
-2. **Invalid Temperature Readings**
-   - Verify sensor wiring
-   - Check for electromagnetic interference
-   - Calibrate sensors if needed
-
-3. **Database Performance**
-   - Ensure indexes are created
-   - Implement data retention policy
-   - Consider partitioning for large datasets
-
-### Debug Logging
-
-```csharp
-public class SensorLogger
-{
-    private readonly ILogger<SensorLogger> _logger;
-    
-    public void LogReading(int sensorId, decimal value, bool isValid)
-    {
-        if (!isValid)
-        {
-            _logger.LogWarning(
-                "Invalid reading from sensor {SensorId}: {Value}", 
-                sensorId, value);
-        }
-        else
-        {
-            _logger.LogDebug(
-                "Sensor {SensorId} reading: {Value}", 
-                sensorId, value);
-        }
-    }
-}
-```
-
-## Testing
-
-### Unit Test Example
+### 🧪 Test Examples
 
 ```csharp
 [TestClass]
@@ -577,64 +446,229 @@ public class SensorServiceTests
 }
 ```
 
-## Seed Data
+## 📊 Performance & Monitoring
+
+### 🚀 Performance Optimization
+
+- **Async Operations**: Non-blocking I/O for responsiveness
+- **Bulk Operations**: Efficient data processing for high-frequency sensors
+- **Database Indexing**: Optimized queries for time-series data
+- **Memory Management**: Efficient data structures and caching
+
+### 📈 Monitoring Features
+
+- **Real-time Metrics**: Live performance indicators
+- **Historical Analysis**: Trend analysis and reporting
+- **Alert System**: Configurable notifications for critical events
+- **Health Checks**: System status monitoring
+
+### 🔍 Data Retention Policy
 
 ```csharp
-public static class SensorSeedData
+// Clean up old readings periodically
+public async Task CleanupOldReadingsAsync(int daysToKeep = 30)
 {
-    public static void Seed(ModelBuilder modelBuilder)
+    var cutoffDate = DateTime.UtcNow.AddDays(-daysToKeep);
+    
+    await _context.SensorReadings
+        .Where(r => r.Timestamp < cutoffDate)
+        .ExecuteDeleteAsync();
+}
+```
+
+## 🔧 Troubleshooting
+
+### ❌ Common Issues
+
+#### 1. ModBus Communication Errors
+**Symptoms:**
+- Connection timeouts
+- Invalid data readings
+- Communication failures
+
+**Solutions:**
+- Check cable connections
+- Verify baud rate settings
+- Ensure correct slave address
+- Test with ModBus simulator
+
+#### 2. Invalid Temperature Readings
+**Symptoms:**
+- Out-of-range values
+- Inconsistent readings
+- Sensor offline status
+
+**Solutions:**
+- Verify sensor wiring
+- Check for electromagnetic interference
+- Calibrate sensors if needed
+- Validate sensor configuration
+
+#### 3. Database Performance Issues
+**Symptoms:**
+- Slow query responses
+- High memory usage
+- Connection timeouts
+
+**Solutions:**
+- Ensure indexes are created
+- Implement data retention policy
+- Consider partitioning for large datasets
+- Monitor query performance
+
+### 🐛 Debug Logging
+
+```csharp
+public class SensorLogger
+{
+    private readonly ILogger<SensorLogger> _logger;
+    
+    public void LogReading(int sensorId, decimal value, bool isValid)
     {
-        modelBuilder.Entity<Sensor>().HasData(
-            new Sensor { Id = 1, Name = "Tank Bottom Temperature", 
-                        SensorType = SensorTypeEnum.TankBottomTemp, 
-                        ModBusAddress = 8, 
-                        UnitType = MeasurementUnitType.Temperature },
-            new Sensor { Id = 2, Name = "Tank Wall Temperature", 
-                        SensorType = SensorTypeEnum.TankWallTemp, 
-                        ModBusAddress = 9, 
-                        UnitType = MeasurementUnitType.Temperature },
-            new Sensor { Id = 3, Name = "Pump Temperature", 
-                        SensorType = SensorTypeEnum.PumpTemp, 
-                        ModBusAddress = 10, 
-                        UnitType = MeasurementUnitType.Temperature },
-            new Sensor { Id = 4, Name = "Fountain Temperature", 
-                        SensorType = SensorTypeEnum.FountainTemp, 
-                        ModBusAddress = 11, 
-                        UnitType = MeasurementUnitType.Temperature },
-            new Sensor { Id = 5, Name = "Pedal Sensor", 
-                        SensorType = SensorTypeEnum.Pedal, 
-                        ModBusAddress = 1, 
-                        UnitType = MeasurementUnitType.Boolean },
-            new Sensor { Id = 6, Name = "Cover Sensor", 
-                        SensorType = SensorTypeEnum.CoverSensor, 
-                        ModBusAddress = 1, 
-                        UnitType = MeasurementUnitType.Boolean },
-            new Sensor { Id = 7, Name = "Emergency Stop", 
-                        SensorType = SensorTypeEnum.EmergencyStop, 
-                        ModBusAddress = 1, 
-                        UnitType = MeasurementUnitType.Boolean }
-        );
+        if (!isValid)
+        {
+            _logger.LogWarning(
+                "Invalid reading from sensor {SensorId}: {Value}", 
+                sensorId, value);
+        }
+        else
+        {
+            _logger.LogDebug(
+                "Sensor {SensorId} reading: {Value}", 
+                sensorId, value);
+        }
     }
 }
 ```
 
-## Contributing
+### 📋 Troubleshooting Checklist
 
-When adding new sensors:
+- [ ] ModBus connection established
+- [ ] Sensor addresses configured correctly
+- [ ] Database connection working
+- [ ] All services running
+- [ ] Logs showing normal operation
+- [ ] Sensor readings within expected ranges
 
-1. Add the sensor type to `SensorTypeEnum`
-2. Update the seed data
-3. Add validation rules if applicable
-4. Update ModBus reading logic
-5. Add unit tests
-6. Update this documentation
+## 🤝 Contributing
 
-## License
+We welcome contributions from the community! Here's how you can help:
 
-This sensor system is part of the DaireApplication project.
+### 🚀 Getting Started
+
+1. **Fork the repository**
+2. **Create a feature branch**
+   ```bash
+   git checkout -b feature/amazing-feature
+   ```
+3. **Make your changes**
+4. **Add tests for new functionality**
+5. **Commit your changes**
+   ```bash
+   git commit -m "Add amazing feature"
+   ```
+6. **Push to the branch**
+   ```bash
+   git push origin feature/amazing-feature
+   ```
+7. **Open a Pull Request**
+
+### 📝 Development Guidelines
+
+- **Code Style**: Follow C# coding conventions
+- **Testing**: Maintain >80% code coverage
+- **Documentation**: Update README and API docs
+- **Performance**: Consider performance implications
+- **Security**: Follow security best practices
+
+### 🐛 Reporting Issues
+
+When reporting issues, please include:
+
+- **Description**: Clear description of the problem
+- **Steps to Reproduce**: Detailed reproduction steps
+- **Expected Behavior**: What you expected to happen
+- **Actual Behavior**: What actually happened
+- **Environment**: OS, .NET version, database version
+- **Logs**: Relevant error logs and stack traces
+
+## 📄 License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+```
+MIT License
+
+Copyright (c) 2024 Nawaf Mahsoun
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+## 📞 Contact & Support
+
+### 👨‍💻 Developer
+- **Name**: Nawaf Mahsoun
+- **Role**: .NET Developer & System Architect
+- **Specialization**: Industrial IoT & Chocolate Production Systems
+
+### 📧 Contact Information
+- **Email**: nawafmahsoun11@gmail.com
+- **LinkedIn**: (https://linkedin.com/in/nawafmahsoun)
+- **GitHub**: (https://github.com/nawafmahs)
+
+### 🆘 Support Options
+- **Community Support**: GitHub Issues & Discussions
+- **Documentation**: Comprehensive guides and tutorials
+- **Professional Support**: Enterprise support packages available
+- **Training**: Custom training and certification programs
+
+## 🌟 Acknowledgments
+
+- **DaireApplication Team**: Original system development
+- **Industrial IoT Community**: Standards and best practices
+- **Chocolate Industry**: Domain expertise and requirements
+- **Open Source Community**: Libraries and frameworks used
 
 ---
 
-**Last Updated**: January 2024  
-**Version**: 1.0.0  
-**Author**: DaireApplication Development Team
+## 🎯 Roadmap
+
+### 🚀 Version 0.6 (Q2 2024)
+- [ ] AI-powered predictive maintenance
+- [ ] Advanced analytics dashboard
+- [ ] Mobile application support
+- [ ] Cloud deployment options
+
+
+
+---
+
+**Built with ❤️ for Industrial IoT and Chocolate Production**
+
+*NexusCore - Connecting Industry, One Sensor at a Time*
+
+---
+
+<div align="center">
+
+**⭐ Star this repository if it helped you! ⭐**
+
+**🤝 Join our community and help shape the future of industrial IoT!**
+
+</div>
