@@ -1,24 +1,25 @@
-# 🚀 NexusCore - Industrial IoT Sensor Management Platform
+# 🚀 NexusCore - Enterprise Industrial IoT Platform
 
-[![.NET](https://img.shields.io/badge/.NET-8.0-blue)](https://dotnet.microsoft.com/download/dotnet/8.0)
-[![EF Core](https://img.shields.io/badge/EF%20Core-8.0-green)](https://docs.microsoft.com/en-us/ef/core/)
-[![ModBus](https://img.shields.io/badge/ModBus-RTU-orange)](https://modbus.org/)
+[![.NET](https://img.shields.io/badge/.NET-9.0-blue)](https://dotnet.microsoft.com/download/dotnet/9.0)
+[![Architecture](https://img.shields.io/badge/Architecture-DDD-green)](https://martinfowler.com/tags/domain%20driven%20design.html)
+[![Clean Architecture](https://img.shields.io/badge/Clean%20Architecture-CQRS-orange)](https://docs.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen)](https://github.com/yourusername/NexusCore/actions)
 
-> **Enterprise-grade sensor monitoring and control system for industrial chocolate production machines**
+> **Enterprise-grade Domain-Driven Industrial IoT platform for intelligent manufacturing control and monitoring**
 
 ## 📖 Table of Contents
 
-- [Overview](#-overview)
-- [✨ Key Features](#-key-features)
-- [🏗️ System Architecture](#️-system-architecture)
+- [🌟 Overview](#-overview)
+- [🏛️ Domain-Driven Architecture](#️-domain-driven-architecture)
+- [📊 Domain Model](#-domain-model)
 - [🔌 Sensor System](#-sensor-system)
 - [💾 Database Design](#-database-design)
 - [🚀 Getting Started](#-getting-started)
 - [📚 API Documentation](#-api-documentation)
+- [🎯 Domain Events & Integration](#-domain-events--integration)
 - [⚙️ Configuration](#️-configuration)
-- [🧪 Testing](#-testing)
+- [🧪 Testing Strategy](#-testing-strategy)
 - [📊 Performance & Monitoring](#-performance--monitoring)
 - [🔧 Troubleshooting](#-troubleshooting)
 - [🤝 Contributing](#-contributing)
@@ -26,1460 +27,481 @@
 
 ## 🌟 Overview
 
-**NexusCore** is a sophisticated, enterprise-grade sensor monitoring and control system designed specifically for industrial chocolate production environments. Built with modern .NET 8 architecture, it provides real-time monitoring, data analytics, and automated control capabilities for complex manufacturing processes.
+**NexusCore** is a sophisticated enterprise-grade Industrial IoT platform built with Domain-Driven Design principles. It provides intelligent real-time monitoring, automated control, and comprehensive analytics for industrial manufacturing processes, with a special focus on temperature-sensitive production environments.
 
-### 🎯 What NexusCore Solves
+### 🎯 Core Capabilities
 
-- **Real-time Monitoring**: Live sensor data with sub-second response times
-- **Quality Control**: Precise temperature management for chocolate tempering
-- **Safety Management**: Automated safety interlocks and emergency controls
-- **Data Analytics**: Historical trends and performance optimization
-- **Industrial Integration**: Seamless ModBus RTU communication with PLC systems
+- **Domain-Driven Design**: Rich domain model with business logic encapsulation
+- **Real-time Intelligence**: Sub-second response with predictive analytics
+- **Safety-First Architecture**: Automated interlocks with state machine controls
+- **Enterprise Integration**: Event-driven architecture with CQRS patterns
+- **Industrial Standards**: ModBus RTU, OPC UA ready, Industry 4.0 compliant
 
 ### 🏭 Target Industries
 
-- **Chocolate Production**: Tempering, molding, and packaging
-- **Food Manufacturing**: Temperature-sensitive production processes
-- **Chemical Processing**: Precise temperature and pressure control
-- **Pharmaceutical**: Quality-critical manufacturing environments
+- **Food & Beverage Manufacturing**: Temperature-critical production processes
+- **Chemical Processing**: Precise environmental control systems
+- **Pharmaceutical Manufacturing**: GMP-compliant production monitoring
+- **Industrial Automation**: General-purpose sensor management
 
-## ✨ Key Features
+## 🏛️ Domain-Driven Architecture
 
-### 🔥 Advanced Temperature Management
-- **4-Point Temperature Monitoring**: Tank bottom, wall, pump, and fountain
-- **PID Control System**: Intelligent heating/cooling with configurable parameters
-- **Range Validation**: -14°C to 65°C with configurable thresholds
-- **Thermal Mapping**: Multi-point temperature analysis for quality control
-
-### 🛡️ Safety & Control Systems
-- **3 Digital Sensors**: Pedal control, cover interlock, emergency stop
-- **Safety Interlocks**: Automated shutdown on critical failures
-- **Manual Override**: Operator control with safety validation
-- **Audit Logging**: Complete operational history for compliance
-
-### 📊 Real-Time Analytics
-- **Live Dashboard**: Sub-second updates with visual indicators
-- **Historical Trends**: Time-series analysis and reporting
-- **Alert Management**: Configurable thresholds and notifications
-- **Performance Metrics**: System health and efficiency monitoring
-
-### 🔌 Industrial Integration
-- **ModBus RTU Protocol**: Industry-standard communication
-- **PLC Integration**: Seamless connection with existing systems
-- **Multi-Protocol Support**: Extensible architecture for various protocols
-- **Real-Time Communication**: SignalR for live updates
-
-## 🏗️ System Architecture
+### 📐 Clean Architecture Layers
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    NexusCore Application                        │
-├─────────────────────────────────────────────────────────────────┤
+│                    Presentation Layer                           │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐           │
-│  │   Web API   │  │  Dashboard  │  │ Background  │           │
-│  │             │  │             │  │  Services   │           │
+│  │   Web API   │  │  Dashboard  │  │   SignalR   │           │
+│  │  REST/gRPC  │  │   Blazor    │  │  Real-time  │           │
 │  └─────────────┘  └─────────────┘  └─────────────┘           │
 ├─────────────────────────────────────────────────────────────────┤
-│                    Business Logic Layer                        │
+│                    Application Layer                            │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐           │
-│  │Sensor Service│  │Recipe Engine│  │Control Logic│           │
+│  │  Commands   │  │   Queries   │  │   Events    │           │
+│  │    CQRS     │  │  Handlers   │  │  Handlers   │           │
 │  └─────────────┘  └─────────────┘  └─────────────┘           │
 ├─────────────────────────────────────────────────────────────────┤
-│                    Data Access Layer                           │
+│                    Domain Layer (Core)                          │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐           │
-│  │ Entity      │  │ Repository  │  │ ModBus      │           │
-│  │ Framework   │  │ Pattern     │  │ Service     │           │
+│  │  Entities   │  │Value Objects│  │Domain Events│           │
+│  │& Aggregates │  │  & Enums    │  │& Exceptions │           │
 │  └─────────────┘  └─────────────┘  └─────────────┘           │
 ├─────────────────────────────────────────────────────────────────┤
-│                    Infrastructure Layer                        │
+│                  Infrastructure Layer                           │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐           │
-│  │ SQL Server  │  │   RabbitMQ  │  │   SignalR   │           │
-│  │  Database   │  │  Message    │  │ Real-time   │           │
-│  └─────────────┘  │   Broker    │  │  Updates    │           │
-│                   └─────────────┘  └─────────────┘           │
+│  │ EF Core 8   │  │  ModBus     │  │  Message    │           │
+│  │ SQL Server  │  │  Services   │  │   Broker    │           │
+│  └─────────────┘  └─────────────┘  └─────────────┘           │
 └─────────────────────────────────────────────────────────────────┘
-                                │
-                                ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                    Industrial Hardware                          │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐           │
-│  │   PLC       │  ┌─────────────┐  │   Sensors   │           │
-│  │ Controller  │◄─┤ ModBus RTU  ├─►│             │           │
-│  └─────────────┘  │  Protocol   │  │ T1-T4, D1-D3│           │
-│                   └─────────────┘  └─────────────┘           │
-└─────────────────────────────────────────────────────────────────┘
+```
+
+### 🎭 Domain Bounded Contexts
+
+```mermaid
+graph TB
+    subgraph "Company Management Context"
+        Company[Company Aggregate]
+        Branch[Branch Entity]
+    end
+    
+    subgraph "Machine Operations Context"
+        Machine[Machine Aggregate Root]
+        MachineType[MachineType Entity]
+        MachineStatus[MachineStatus Value Object]
+        MachineOperationLog[Operation Log Entity]
+    end
+    
+    subgraph "Sensor Management Context"
+        Sensor[Sensor Aggregate]
+        SensorType[SensorType Entity]
+        SensorReading[SensorReading Entity]
+        MachineSensor[MachineSensor Entity]
+    end
+    
+    subgraph "Recipe Management Context"
+        Recipe[Recipe Aggregate]
+        RecipeStep[RecipeStep Entity]
+    end
+    
+    Company --> Branch
+    Branch --> Machine
+    Machine --> MachineType
+    Machine --> MachineSensor
+    MachineSensor --> Sensor
+    Sensor --> SensorReading
+    Machine --> Recipe
+    Recipe --> RecipeStep
+```
+
+## 📊 Domain Model
+
+### 🏢 Company Aggregate
+
+The Company aggregate manages organizational hierarchy with branches and their associated machines.
+
+```csharp
+public class Company : BaseEntity
+{
+    // Properties with private setters for encapsulation
+    public string Name { get; private set; }
+    public string Address { get; private set; }
+    public string PhoneNumber { get; private set; }
+    public string Email { get; private set; }
+    public bool IsActive { get; private set; }
+    public DateTime CreatedAt { get; private set; }
+    
+    // Collections
+    public IReadOnlyCollection<Branch> Branches => _branches.AsReadOnly();
+    
+    // Rich domain behaviors
+    public void AddBranch(Branch branch)
+    {
+        // Business rules enforcement
+        if (!IsActive)
+            throw new InvalidOperationException("Cannot add branch to inactive company");
+            
+        _branches.Add(branch);
+        AddDomainEvent(new BranchAddedEvent(Id, branch.Id));
+    }
+    
+    public void Deactivate()
+    {
+        if (_branches.Any(b => b.IsActive))
+            throw new InvalidOperationException("Cannot deactivate company with active branches");
+            
+        IsActive = false;
+    }
+}
+```
+
+### 🏭 Machine Aggregate Root
+
+The Machine aggregate is the core of the system, managing operational state, sensors, and production activities.
+
+#### 🔄 Machine State Machine
+
+```mermaid
+stateDiagram-v2
+    [*] --> Offline
+    Offline --> Starting: StartUp()
+    Starting --> Idle: CompleteStartup()
+    Starting --> Error: Fault
+    Starting --> Offline: Cancel
+    
+    Idle --> Producing: StartProduction()
+    Idle --> ShuttingDown: Shutdown()
+    
+    Producing --> Idle: StopProduction()
+    Producing --> Error: Fault
+    Producing --> ShuttingDown: EmergencyStop()
+    
+    ShuttingDown --> Offline: Complete
+    
+    Error --> Offline: ClearError()
+    Error --> Starting: Reset
+    
+    Offline --> UnderMaintenance: StartMaintenance()
+    UnderMaintenance --> Offline: CompleteMaintenance()
+```
+
+#### 🎯 Machine Behaviors
+
+```csharp
+public class Machine : BaseEntity
+{
+    // State management
+    public MachineStatus Status { get; private set; }
+    
+    // Rich behaviors with business logic
+    public void StartProduction(Recipe recipe, string batchNumber, string @operator)
+    {
+        // Validate business rules
+        if (!Status.CanStartProduction())
+            throw new InvalidOperationException($"Cannot start production in {Status} status");
+            
+        if (!recipe.CanBeUsedForProduction())
+            throw new InvalidOperationException("Recipe is not approved for production");
+            
+        // State transition
+        TransitionToStatus(MachineStatus.Producing, @operator);
+        
+        // Update domain state
+        CurrentRecipe = recipe;
+        CurrentBatchNumber = batchNumber;
+        ProductionStartedAt = DateTime.UtcNow;
+        
+        // Create audit log
+        var log = MachineOperationLog.CreateProductionLog(this, recipe.Id, batchNumber, true);
+        _operationLogs.Add(log);
+        
+        // Raise domain event
+        AddDomainEvent(new ProductionStartedEvent(Id, recipe.Id, batchNumber));
+    }
+    
+    public void ReportError(string errorDescription, string errorCode, string detectedBy)
+    {
+        TransitionToStatus(MachineStatus.Error, detectedBy);
+        
+        var log = MachineOperationLog.CreateError(
+            this, 
+            EventTypeEnum.SystemError, 
+            errorDescription, 
+            detectedBy, 
+            errorCode);
+            
+        _operationLogs.Add(log);
+        AddDomainEvent(new MachineErrorOccurredEvent(Id, errorCode, errorDescription));
+    }
+}
+```
+
+### 📋 Recipe Management
+
+Recipes contain production parameters with version control and approval workflows.
+
+```csharp
+public class Recipe : BaseEntity
+{
+    // Temperature parameters
+    public decimal HeatingTemperature { get; private set; }
+    public decimal CoolingTemperature { get; private set; }
+    public decimal PouringTemperature { get; private set; }
+    public decimal TemperatureTolerance { get; private set; }
+    
+    // Version control
+    public int Version { get; private set; }
+    public bool IsApproved { get; private set; }
+    
+    // Recipe steps
+    public IReadOnlyCollection<RecipeStep> Steps => _steps.AsReadOnly();
+    
+    // Domain operations
+    public void SetTemperatures(decimal heating, decimal cooling, decimal pouring)
+    {
+        // Validate temperature logic
+        if (heating < 0 || heating > 200)
+            throw new ArgumentException("Heating temperature must be between 0°C and 200°C");
+            
+        if (pouring < cooling || pouring > heating)
+            throw new ArgumentException("Pouring temperature must be between cooling and heating");
+            
+        HeatingTemperature = heating;
+        CoolingTemperature = cooling;
+        PouringTemperature = pouring;
+        
+        // Auto-increment version on parameter change
+        if (IsApproved)
+        {
+            Version++;
+            IsApproved = false; // Requires re-approval
+        }
+    }
+    
+    public Recipe Clone(string newCode, string newName)
+    {
+        var clone = new Recipe(newName, newCode, HeatingTemperature, CoolingTemperature, PouringTemperature);
+        
+        // Copy all steps
+        foreach (var step in _steps.OrderBy(s => s.StepNumber))
+        {
+            clone.AddStep(step.StepNumber, step.Description, step.DurationMinutes, step.TargetTemperature);
+        }
+        
+        return clone;
+    }
+}
+```
+
+### 🌡️ Sensor Domain Model
+
+```csharp
+public class Sensor : BaseEntity
+{
+    // Configuration
+    public SensorTypeEnum SensorType { get; private set; }
+    public string Name { get; private set; }
+    public int ModBusAddress { get; private set; }
+    public MeasurementUnitType UnitType { get; private set; }
+    
+    // Calibration management
+    public DateTime? LastCalibratedAt { get; private set; }
+    public int CalibrationIntervalDays { get; private set; }
+    
+    // Reading management
+    public SensorReading RecordReading(decimal value, DateTime? timestamp = null)
+    {
+        if (!IsActive)
+            throw new InvalidOperationException("Cannot record readings for inactive sensor");
+            
+        // Validate reading based on sensor type
+        if (!IsValidReading(value))
+            throw new InvalidSensorReadingException($"Invalid reading {value} for sensor type {SensorType}");
+            
+        var reading = new SensorReading(this, value, timestamp ?? DateTime.UtcNow);
+        _readings.Add(reading);
+        
+        return reading;
+    }
+    
+    public bool IsCalibrationDue()
+    {
+        if (LastCalibratedAt == null) return true;
+        
+        var nextCalibrationDate = LastCalibratedAt.Value.AddDays(CalibrationIntervalDays);
+        return DateTime.UtcNow >= nextCalibrationDate;
+    }
+}
+```
+
+### 🔧 Value Objects
+
+#### MachineStatus Value Object
+
+```csharp
+public sealed class MachineStatus : ValueObject
+{
+    public static readonly MachineStatus Offline = new("Offline", 0, false, false);
+    public static readonly MachineStatus Online = new("Online", 1, true, true);
+    public static readonly MachineStatus UnderMaintenance = new("UnderMaintenance", 2, false, false);
+    public static readonly MachineStatus Error = new("Error", 3, true, false);
+    public static readonly MachineStatus Starting = new("Starting", 4, true, false);
+    public static readonly MachineStatus ShuttingDown = new("ShuttingDown", 5, true, false);
+    public static readonly MachineStatus Idle = new("Idle", 6, true, true);
+    public static readonly MachineStatus Producing = new("Producing", 7, true, true);
+    
+    public string Name { get; }
+    public int Code { get; }
+    public bool IsPowered { get; }
+    public bool CanAcceptCommands { get; }
+    
+    public bool CanTransitionTo(MachineStatus newStatus)
+    {
+        // State machine transition rules
+        return (Name, newStatus.Name) switch
+        {
+            ("Offline", "Starting") => true,
+            ("Offline", "UnderMaintenance") => true,
+            ("Starting", "Online") => true,
+            ("Starting", "Idle") => true,
+            ("Starting", "Error") => true,
+            ("Idle", "Producing") => true,
+            ("Producing", "Idle") => true,
+            // ... other transitions
+            _ => false
+        };
+    }
+}
 ```
 
 ## 🔌 Sensor System
 
 ### 🌡️ Temperature Sensors (4 units)
 
-| Sensor | Name | ModBus Address | Range | Purpose | Status |
-|--------|------|----------------|-------|---------|---------|
-| **T-1** | Tank Bottom Temp | `8` | -14°C to 65°C | Monitor chocolate temperature at tank bottom | ✅ Active |
-| **T-2** | Tank Wall Temp | `9` | -14°C to 65°C | Monitor chocolate temperature at tank wall | ✅ Active |
-| **T-3** | Pump Temp | `10` | -10°C to 50°C | Monitor pump/circulation temperature | ✅ Active |
-| **T-4** | Fountain Temp | `11` | -14°C to 65°C | Monitor dispensing temperature | ✅ Active |
+| Sensor | Name | ModBus Address | Range | Purpose | Domain Entity |
+|--------|------|----------------|-------|---------|---------------|
+| **T-1** | Tank Bottom Temp | `8` | -14°C to 65°C | Monitor material temperature at tank bottom | `Sensor` with `SensorTypeEnum.TankBottomTemp` |
+| **T-2** | Tank Wall Temp | `9` | -14°C to 65°C | Monitor material temperature at tank wall | `Sensor` with `SensorTypeEnum.TankWallTemp` |
+| **T-3** | Pump Temp | `10` | -10°C to 50°C | Monitor pump/circulation temperature | `Sensor` with `SensorTypeEnum.PumpTemp` |
+| **T-4** | Fountain Temp | `11` | -14°C to 65°C | Monitor dispensing temperature | `Sensor` with `SensorTypeEnum.FountainTemp` |
 
 ### 🔌 Digital Sensors (3 units)
 
-| Sensor | Name | ModBus Address | Type | Purpose | Status |
-|--------|------|----------------|------|---------|---------|
-| **D-1** | Pedal | `1 (Bit 0)` | Boolean | Manual dispensing control | ✅ Active |
-| **D-2** | Cover Sensor | `1 (Bit 1)` | Boolean | Safety interlock for cover | ✅ Active |
-| **D-3** | E-Stop | `1 (Bit 2)` | Boolean | Emergency stop button | ✅ Active |
+| Sensor | Name | ModBus Address | Type | Purpose | Domain Entity |
+|--------|------|----------------|------|---------|---------------|
+| **D-1** | Pedal | `1 (Bit 0)` | Boolean | Manual dispensing control | `Sensor` with `SensorTypeEnum.Pedal` |
+| **D-2** | Cover Sensor | `1 (Bit 1)` | Boolean | Safety interlock for cover | `Sensor` with `SensorTypeEnum.CoverSensor` |
+| **D-3** | E-Stop | `1 (Bit 2)` | Boolean | Emergency stop button | `Sensor` with `SensorTypeEnum.EmergencyStop` |
 
-### 📡 ModBus Configuration
+### 📊 Sensor Reading Domain Model
 
-```json
+```csharp
+public class SensorReading : BaseEntity
 {
-  "ModBusSettings": {
-    "PortName": "COM1",
-    "BaudRate": 115200,
-    "DataBits": 8,
-    "Parity": "None",
-    "StopBits": 1,
-    "SlaveAddress": 1,
-    "Timeout": 1000,
-    "PollingInterval": 30000
-  }
+    public Guid SensorRef { get; private set; }
+    public Sensor Sensor { get; private set; }
+    public DateTime Timestamp { get; private set; }
+    public decimal Value { get; private set; }
+    public ReadingQuality Quality { get; private set; }
+    public bool IsProcessed { get; private set; }
+    
+    // Business logic
+    public void MarkAsProcessed()
+    {
+        if (IsProcessed) return; // Idempotent
+        
+        IsProcessed = true;
+        ProcessedAt = DateTime.UtcNow;
+    }
+    
+    public bool IsStale(TimeSpan maxAge)
+    {
+        return DateTime.UtcNow - Timestamp > maxAge;
+    }
+    
+    public string GetFormattedValue()
+    {
+        return Sensor.UnitType switch
+        {
+            MeasurementUnitType.Temperature => $"{Value:F1}°C",
+            MeasurementUnitType.Boolean => Value == 1 ? "ON" : "OFF",
+            MeasurementUnitType.Percentage => $"{Value:F1}%",
+            _ => Value.ToString("F2")
+        };
+    }
 }
 ```
 
 ## 💾 Database Design
 
-### 🗄️ Entity Relationship
-
-```mermaid
-erDiagram
-    SENSOR {
-        int Id PK
-        string Name
-        int ModBusAddress
-        string SensorType
-        string UnitType
-        bool IsActive
-        datetime CreatedAt
-    }
-    
-    SENSOR_READING {
-        long Id PK
-        int SensorId FK
-        datetime Timestamp
-        decimal Value
-        bool IsValid
-    }
-    
-    RECIPE {
-        int Id PK
-        string Name
-        float TankTemp
-        float FountainTemp
-        float MixerTemp
-        bool Mixer
-        bool Fountain
-        float HeatingGoal
-        float CoolingGoal
-        float PouringGoal
-    }
-    
-    MACHINE_CONFIG {
-        int Id PK
-        float TankMaxHeat
-        float PumpMaxHeat
-        int PumpDelay
-        int MixerDelay
-        float AbsMaxTemp
-        float AbsMinTemp
-    }
-    
-    SENSOR ||--o{ SENSOR_READING : "has many"
-    RECIPE ||--o{ SENSOR_READING : "monitors"
-    MACHINE_CONFIG ||--o{ SENSOR : "configures"
-```
-
-### 🔧 **MachineSensor Relationship (Arabic Explanation)**
-
-#### 📋 **ما هو MachineSensor؟**
-
-`MachineSensor` هو **جدول وسيط** (Intermediate Table) يربط بين الماكينة والأجهزة الاستشعارية. إنه يعمل كـ "جسر" يربط الماكينة بأجهزة الاستشعار الخاصة بها.
-
-#### 🎯 **الغرض منه:**
-
-| الجدول | الوظيفة | المثال |
-|---------|---------|---------|
-| **Machine** | يحتوي على معلومات الماكينة | اسم الماكينة، النموذج، التاريخ |
-| **MachineSensor** | يربط الماكينة بأجهزة الاستشعار | "الماكينة رقم 1 لديها 7 أجهزة استشعار" |
-| **Sensor** | يحتوي على معلومات أجهزة الاستشعار | درجة الحرارة، العنوان، النوع |
-
-#### 💡 **لماذا نحتاجه؟**
-
-1. **علاقة متعددة لمتعدد (Many-to-Many):**
-   - ماكينة واحدة يمكن أن تحتوي على عدة أجهزة استشعار
-   - جهاز استشعار واحد يمكن أن يستخدم في عدة ماكينات
-
-2. **إدارة مرنة:**
-   - إضافة جهاز استشعار جديد للماكينة
-   - إزالة جهاز استشعار من الماكينة
-   - نقل جهاز استشعار بين الماكينات
-
-3. **تتبع التاريخ:**
-   - متى تم تثبيت الجهاز؟
-   - متى تم إزالته؟
-   - من قام بالتثبيت؟
-
-#### 🚀 **مثال عملي في نظامك:**
-
-```sql
--- جدول الماكينات
-CREATE TABLE Machines (
-    MachineId INT PRIMARY KEY,
-    MachineName NVARCHAR(100),
-    Model NVARCHAR(50),
-    InstallationDate DATE
-);
-
--- جدول الربط
-CREATE TABLE MachineSensors (
-    MachineId INT,           -- معرف الماكينة
-    SensorId INT,            -- معرف جهاز الاستشعار
-    InstallationDate DATE,   -- تاريخ التثبيت
-    IsActive BIT,            -- هل يعمل؟
-    PRIMARY KEY (MachineId, SensorId)
-);
-
--- جدول أجهزة الاستشعار
-CREATE TABLE Sensors (
-    SensorId INT PRIMARY KEY,
-    SensorName NVARCHAR(100),
-    SensorType NVARCHAR(50),
-    ModBusAddress INT
-);
-```
-
-#### 📊 **بيانات حقيقية:**
-
-```sql
--- إدخال الماكينة
-INSERT INTO Machines VALUES (1, 'ماكينة الشوكولاتة', 'Daire-2024', '2024-01-15');
-
--- ربط أجهزة الاستشعار بالماكينة
-INSERT INTO MachineSensors VALUES 
-(1, 1, '2024-01-15', 1),  -- Tank Bottom Temp
-(1, 2, '2024-01-15', 1),  -- Tank Wall Temp  
-(1, 3, '2024-01-15', 1),  -- Pump Temp
-(1, 4, '2024-01-15', 1),  -- Fountain Temp
-(1, 5, '2024-01-15', 1),  -- Pedal Sensor
-(1, 6, '2024-01-15', 1),  -- Cover Sensor
-(1, 7, '2024-01-15', 1);  -- E-Stop
-```
-
-#### 🎯 **فوائد في لوحة التحكم:**
-
-1. **عرض منظم:** "هذه الماكينة تحتوي على 7 أجهزة استشعار"
-2. **إدارة سهلة:** إضافة/إزالة أجهزة استشعار من الماكينة
-3. **تتبع الأداء:** أي جهاز استشعار يعمل وأيها لا يعمل
-4. **صيانة:** معرف متى تم تثبيت كل جهاز
-
-#### 🔄 **بديل مبسط:**
-
-إذا كنت لا تحتاج إلى تعقيد كبير، يمكنك استخدام **علاقة مباشرة**:
+### 🗄️ Entity Framework Core Configuration
 
 ```csharp
-public class Sensor
+public class MachineConfiguration : IEntityTypeConfiguration<Machine>
 {
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public int MachineId { get; set; }  // معرف الماكينة مباشرة
-    public Machine Machine { get; set; } // ربط مباشر
-}
-```
-
-**الخلاصة:** `MachineSensor` يساعدك في إدارة العلاقة بين الماكينة وأجهزة الاستشعار بطريقة مرنة ومنظمة! 🎉
-
-### 🏗️ **Complete Class Diagram Explanation**
-
-#### 📋 **Overview of All Classes**
-
-The NexusCore system consists of **8 main classes** that work together to create a comprehensive sensor management platform. Each class has a specific responsibility and contributes to the overall system architecture.
-
-#### 🔧 **1. SensorType Class**
-
-**Purpose:** Categorizes sensors into logical groups (Temperature, Digital, etc.)
-
-```csharp
-public class SensorType
-{
-    public int SensorTypeId { get; set; }        // Unique identifier
-    public string SensorTypeName { get; set; }   // "Temperature", "Digital"
-    public string Description { get; set; }      // Detailed explanation
-    public List<Sensor> Sensors { get; set; }    // All sensors of this type
-}
-```
-
-**Why We Need It:**
-- **Grouping:** Organize sensors by function (all temperature sensors together)
-- **Validation:** Apply type-specific rules (temperature ranges, digital states)
-- **Display:** Show appropriate UI controls for each sensor type
-- **Business Logic:** Handle type-specific operations
-- **Reporting:** Generate reports by sensor category
-
-**Real Example:**
-```csharp
-// Get all temperature sensors
-var tempSensors = await context.Sensors
-    .Where(s => s.SensorType.SensorTypeName == "Temperature")
-    .ToListAsync();
-
-// Get all safety sensors
-var safetySensors = await context.Sensors
-    .Where(s => s.SensorType.SensorTypeName == "Digital")
-    .ToListAsync();
-```
-
-#### 🌡️ **2. Sensor Class**
-
-**Purpose:** Represents ONE physical sensor device with its configuration
-
-```csharp
-public class Sensor
-{
-    public int Id { get; set; }                    // Unique sensor ID
-    public SensorTypeEnum SensorType { get; set; }  // TankBottomTemp, Pedal, etc.
-    public string Name { get; set; }                // "Tank Bottom Temperature"
-    public int ModBusAddress { get; set; }          // Address 8, 9, 10, 11
-    public MeasurementUnitType UnitType { get; set; } // Temperature=°C, Boolean=ON/OFF
-    public bool IsActive { get; set; } = true;      // Is it working?
-    public DateTime CreatedAt { get; set; }         // Installation date
-    
-    // Navigation properties
-    public ICollection<SensorReading> Readings { get; set; } // All readings
-}
-```
-
-**Key Properties Explained:**
-- **SensorType:** Specific sensor identity (TankBottomTemp, TankWallTemp, PumpTemp, FountainTemp, Pedal, Cover, EStop)
-- **ModBusAddress:** Physical hardware address for communication
-- **UnitType:** How to measure and display values
-- **IsActive:** Enable/disable sensor without deleting it
-
-**Real Example in Your System:**
-```csharp
-// Tank Bottom Temperature Sensor
-var tankBottomSensor = new Sensor
-{
-    Id = 1,
-    SensorType = SensorTypeEnum.TankBottomTemp,
-    Name = "Tank Bottom Temperature",
-    ModBusAddress = 8,
-    UnitType = MeasurementUnitType.Temperature,
-    IsActive = true
-};
-```
-
-#### 📊 **3. SensorReading Class**
-
-**Purpose:** Stores time-series data from sensors (temperature values, digital states)
-
-```csharp
-public class SensorReading
-{
-    public long Id { get; set; }           // Unique reading ID
-    public int SensorId { get; set; }      // Which sensor produced this reading
-    public DateTime Timestamp { get; set; } // When was it recorded
-    public decimal Value { get; set; }      // Actual reading (45.5°C, ON/OFF)
-    public bool IsValid { get; set; }      // Is this reading reliable?
-    
-    // Navigation property
-    public Sensor Sensor { get; set; }      // Link back to sensor
-}
-```
-
-**Why Separate from Sensor?**
-- **Performance:** Sensor table stays small, readings can be millions
-- **History:** Keep sensor configuration separate from historical data
-- **Flexibility:** Easy to add new reading properties without affecting sensors
-- **Cleanup:** Delete old readings without losing sensor configuration
-
-**Real Example:**
-```csharp
-// Record a temperature reading
-var reading = new SensorReading
-{
-    SensorId = 1,                    // Tank Bottom Temp sensor
-    Timestamp = DateTime.UtcNow,     // Current time
-    Value = 45.5m,                   // 45.5°C
-    IsValid = true                   // Reading is reliable
-};
-```
-
-#### 🏭 **4. Machine Class**
-
-**Purpose:** Represents a physical chocolate production machine
-
-```csharp
-public class Machine
-{
-    public int Id { get; set; }                    // Unique machine ID
-    public string Name { get; set; }                // "Chocolate Machine #1"
-    public string Model { get; set; }               // "Daire-2024"
-    public DateTime InstallationDate { get; set; }  // When installed
-    public bool IsActive { get; set; } = true;      // Is machine operational?
-    
-    // Navigation properties
-    public ICollection<Sensor> Sensors { get; set; } // All sensors on this machine
-}
-```
-
-**Real Example:**
-```csharp
-var chocolateMachine = new Machine
-{
-    Id = 1,
-    Name = "Chocolate Machine #1",
-    Model = "Daire-2024",
-    InstallationDate = new DateTime(2024, 1, 15),
-    IsActive = true
-};
-```
-
-#### 📝 **5. Recipe Class**
-
-**Purpose:** Stores chocolate production recipes with temperature targets
-
-```csharp
-public class Recipe
-{
-    public int Id { get; set; }                    // Unique recipe ID
-    public string Name { get; set; }                // "Dark Chocolate Premium"
-    public float TankTemp { get; set; }             // Target tank temperature
-    public float FountainTemp { get; set; }         // Target fountain temperature
-    public float MixerTemp { get; set; }            // Target mixer temperature
-    public bool Mixer { get; set; }                 // Enable mixer?
-    public bool Fountain { get; set; }              // Enable fountain?
-    public float HeatingGoal { get; set; }          // Heating target
-    public float CoolingGoal { get; set; }          // Cooling target
-    public float PouringGoal { get; set; }          // Pouring temperature
-}
-```
-
-**Real Example:**
-```csharp
-var darkChocolateRecipe = new Recipe
-{
-    Id = 1,
-    Name = "Dark Chocolate Premium",
-    TankTemp = 47.0f,           // 47°C for tank
-    FountainTemp = 45.0f,       // 45°C for fountain
-    MixerTemp = 46.0f,          // 46°C for mixer
-    Mixer = true,                // Enable mixer
-    Fountain = true,             // Enable fountain
-    HeatingGoal = 47.0f,        // Heat to 47°C
-    CoolingGoal = 45.0f,        // Cool to 45°C
-    PouringGoal = 45.0f         // Pour at 45°C
-};
-```
-
-#### ⚙️ **6. MachineConfig Class**
-
-**Purpose:** Stores machine safety limits and operational parameters
-
-```csharp
-public class MachineConfig
-{
-    public int Id { get; set; }                    // Unique config ID
-    public float TankMaxHeat { get; set; }          // Maximum tank temperature
-    public float PumpMaxHeat { get; set; }          // Maximum pump temperature
-    public int PumpDelay { get; set; }              // Pump activation delay (seconds)
-    public int MixerDelay { get; set; }             // Mixer activation delay (seconds)
-    public float AbsMaxTemp { get; set; }           // Absolute maximum temperature
-    public float AbsMinTemp { get; set; }           // Absolute minimum temperature
-}
-```
-
-**Real Example:**
-```csharp
-var machineConfig = new MachineConfig
-{
-    Id = 1,
-    TankMaxHeat = 65.0f,        // Tank can't exceed 65°C
-    PumpMaxHeat = 50.0f,        // Pump can't exceed 50°C
-    PumpDelay = 30,              // Wait 30 seconds before starting pump
-    MixerDelay = 45,             // Wait 45 seconds before starting mixer
-    AbsMaxTemp = 70.0f,          // System shutdown at 70°C
-    AbsMinTemp = -14.0f          // System shutdown at -14°C
-};
-```
-
-#### 🔌 **7. ModBusMaster Class**
-
-**Purpose:** Manages communication with PLC hardware via ModBus RTU protocol
-
-```csharp
-public class ModBusMaster
-{
-    public int Id { get; set; }                    // Unique ModBus instance ID
-    public string PortName { get; set; }            // "COM1", "COM2"
-    public int BaudRate { get; set; }               // 115200, 9600
-    public int SlaveAddress { get; set; }           // PLC address (usually 1)
-    public bool IsConnected { get; set; }           // Connection status
-    public DateTime LastCommunication { get; set; } // Last successful read
-    
-    // Methods for communication
-    public async Task<decimal> ReadHoldingRegisterAsync(int address);
-    public async Task<bool> ReadDigitalInputAsync(int address, int bit);
-    public async Task<bool> WriteHoldingRegisterAsync(int address, decimal value);
-}
-```
-
-**Real Example:**
-```csharp
-var modbusMaster = new ModBusMaster
-{
-    Id = 1,
-    PortName = "COM1",
-    BaudRate = 115200,
-    SlaveAddress = 1,
-    IsConnected = true
-};
-
-// Read temperature from Tank Bottom sensor (Address 8)
-var temperature = await modbusMaster.ReadHoldingRegisterAsync(8);
-Console.WriteLine($"Tank Bottom Temperature: {temperature}°C");
-
-// Read pedal state (Address 1, Bit 0)
-var pedalPressed = await modbusMaster.ReadDigitalInputAsync(1, 0);
-Console.WriteLine($"Pedal Pressed: {pedalPressed}");
-```
-
-#### 📊 **8. SensorReadingSummary Class**
-
-**Purpose:** Provides aggregated sensor data for dashboard display
-
-```csharp
-public class SensorReadingSummary
-{
-    public int SensorId { get; set; }               // Which sensor
-    public string SensorName { get; set; }           // Human-readable name
-    public decimal CurrentValue { get; set; }        // Latest reading
-    public decimal MinValue { get; set; }            // Minimum in period
-    public decimal MaxValue { get; set; }            // Maximum in period
-    public decimal AverageValue { get; set; }        // Average in period
-    public DateTime LastUpdate { get; set; }         // When last updated
-    public bool IsOnline { get; set; }               // Sensor status
-    public string Status { get; set; }               // "Normal", "Warning", "Error"
-}
-```
-
-**Real Example:**
-```csharp
-var tankBottomSummary = new SensorReadingSummary
-{
-    SensorId = 1,
-    SensorName = "Tank Bottom Temperature",
-    CurrentValue = 45.5m,        // Current: 45.5°C
-    MinValue = 44.2m,            // Min in last hour: 44.2°C
-    MaxValue = 46.8m,            // Max in last hour: 46.8°C
-    AverageValue = 45.3m,        // Average in last hour: 45.3°C
-    LastUpdate = DateTime.UtcNow, // Just updated
-    IsOnline = true,              // Sensor is working
-    Status = "Normal"             // Temperature is within range
-};
-```
-
-#### 📝 **9. MachineOperationLog Class**
-
-**Purpose:** Tracks all machine operations, events, and activities for audit and troubleshooting
-
-```csharp
-public class MachineOperationLog
-{
-    public long LogId { get; set; }                  // Unique log entry ID
-    public int MachineId { get; set; }               // Which machine
-    public EventTypeEnum EventType { get; set; }     // Type of event (NOT string!)
-    public string Description { get; set; }          // Detailed description
-    public DateTime LogTime { get; set; }            // When event occurred
-    public SeverityLevelEnum Severity { get; set; }  // Importance level (NOT string!)
-    public string OperatorName { get; set; }         // Who performed the action
-    public string AdditionalData { get; set; }       // JSON data for complex events
-    
-    // Navigation properties
-    public Machine Machine { get; set; }             // Link to machine
-}
-```
-
-**Why NOT Use Strings for EventType and Severity?**
-
-| المشكلة مع النصوص | الحل مع Enums | الفائدة |
-|-------------------|----------------|----------|
-| **أخطاء كتابية:** "Start" vs "start" vs "START" | `EventTypeEnum.Start` | لا يمكن الخطأ في الكتابة |
-| **صعوبة التطوير:** لا يعرف IDE الخيارات المتاحة | `EventTypeEnum.` + IntelliSense | اقتراحات تلقائية |
-| **صعوبة التحقق:** لا يمكن التأكد من صحة القيمة | قيم محددة مسبقاً | تحقق تلقائي من صحة البيانات |
-| **صعوبة الترجمة:** كل لغة تحتاج نصوص مختلفة | رموز موحدة | دعم متعدد اللغات |
-| **صعوبة التجميع:** "Start" و "start" يعتبران مختلفين | قيم موحدة | تجميع دقيق |
-
-#### 🎯 **EventTypeEnum - أنواع الأحداث**
-
-```csharp
-public enum EventTypeEnum
-{
-    // Machine Operations
-    MachineStart = 1,           // بدء تشغيل الماكينة
-    MachineStop = 2,            // إيقاف الماكينة
-    MachinePause = 3,           // إيقاف مؤقت
-    MachineResume = 4,          // استئناف التشغيل
-    
-    // Production Events
-    ProductionStart = 10,       // بدء الإنتاج
-    ProductionComplete = 11,    // اكتمال الإنتاج
-    BatchStart = 12,            // بدء دفعة جديدة
-    BatchComplete = 13,         // اكتمال الدفعة
-    
-    // Safety Events
-    EmergencyStop = 20,         // إيقاف طارئ
-    SafetyInterlock = 21,      // قفل أمان
-    CoverOpened = 22,           // فتح الغطاء
-    CoverClosed = 23,           // إغلاق الغطاء
-    
-    // Maintenance Events
-    MaintenanceStart = 30,      // بدء الصيانة
-    MaintenanceComplete = 31,   // اكتمال الصيانة
-    CalibrationStart = 32,     // بدء المعايرة
-    CalibrationComplete = 33,  // اكتمال المعايرة
-    
-    // Error Events
-    SensorError = 40,           // خطأ في جهاز الاستشعار
-    CommunicationError = 41,    // خطأ في الاتصال
-    TemperatureError = 42,      // خطأ في درجة الحرارة
-    SystemError = 43,           // خطأ في النظام
-    
-    // User Actions
-    UserLogin = 50,             // تسجيل دخول المستخدم
-    UserLogout = 51,            // تسجيل خروج المستخدم
-    RecipeChange = 52,          // تغيير الوصفة
-    SettingChange = 53,         // تغيير الإعدادات
-}
-```
-
-#### 🚨 **SeverityLevelEnum - مستويات الأهمية**
-
-```csharp
-public enum SeverityLevelEnum
-{
-    Info = 1,                   // معلومات عادية
-    Warning = 2,                // تحذير
-    Error = 3,                  // خطأ
-    Critical = 4,               // خطير
-    Fatal = 5                   // مميت
-}
-```
-
-#### 💡 **كيفية استخدام Enums بشكل احترافي**
-
-**1. إنشاء Extension Methods للترجمة:**
-```csharp
-public static class EventTypeExtensions
-{
-    public static string GetDisplayName(this EventTypeEnum eventType, string language = "ar")
+    public void Configure(EntityTypeBuilder<Machine> builder)
     {
-        return language switch
+        builder.ToTable("Machines");
+        
+        // Value object configuration
+        builder.ComplexProperty(m => m.Status, status =>
         {
-            "ar" => eventType switch
-            {
-                EventTypeEnum.MachineStart => "بدء تشغيل الماكينة",
-                EventTypeEnum.MachineStop => "إيقاف الماكينة",
-                EventTypeEnum.EmergencyStop => "إيقاف طارئ",
-                EventTypeEnum.ProductionStart => "بدء الإنتاج",
-                EventTypeEnum.MaintenanceStart => "بدء الصيانة",
-                EventTypeEnum.SensorError => "خطأ في جهاز الاستشعار",
-                _ => eventType.ToString()
-            },
-            "en" => eventType switch
-            {
-                EventTypeEnum.MachineStart => "Machine Start",
-                EventTypeEnum.MachineStop => "Machine Stop",
-                EventTypeEnum.EmergencyStop => "Emergency Stop",
-                EventTypeEnum.ProductionStart => "Production Start",
-                EventTypeEnum.MaintenanceStart => "Maintenance Start",
-                EventTypeEnum.SensorError => "Sensor Error",
-                _ => eventType.ToString()
-            },
-            _ => eventType.ToString()
-        };
-    }
-    
-    public static string GetIcon(this EventTypeEnum eventType)
-    {
-        return eventType switch
-        {
-            EventTypeEnum.MachineStart => "🟢",
-            EventTypeEnum.MachineStop => "🔴",
-            EventTypeEnum.EmergencyStop => "🚨",
-            EventTypeEnum.ProductionStart => "🏭",
-            EventTypeEnum.MaintenanceStart => "🔧",
-            EventTypeEnum.SensorError => "⚠️",
-            _ => "ℹ️"
-        };
-    }
-}
-```
-
-**2. إنشاء Value Objects للبيانات الإضافية:**
-
-```csharp
-public class EventData
-{
-    public int? RecipeId { get; set; }              // معرف الوصفة (NOT string!)
-    public decimal Temperature { get; set; }
-    public int? OperatorId { get; set; }             // معرف المشغل (NOT string!)
-    public Dictionary<string, object> CustomData { get; set; }
-    
-    // Navigation properties
-    public Recipe Recipe { get; set; }               // ربط بالوصفة
-    public Operator Operator { get; set; }           // ربط بالمشغل
-}
-
-// استخدام في MachineOperationLog
-public class MachineOperationLog
-{
-    // ... existing properties ...
-    public EventData EventData { get; set; }        // بيانات إضافية منظمة
-}
-```
-
-**3. إنشاء جدول المشغلين (Operators):**
-
-```csharp
-public class Operator
-{
-    public int Id { get; set; }                      // معرف المشغل
-    public string Name { get; set; }                 // اسم المشغل
-    public string EmployeeId { get; set; }           // رقم الموظف
-    public string Department { get; set; }           // القسم
-    public bool IsActive { get; set; } = true;       // هل يعمل؟
-    public DateTime HireDate { get; set; }           // تاريخ التعيين
-    public string ContactNumber { get; set; }        // رقم الاتصال
-    public string Email { get; set; }                // البريد الإلكتروني
-    
-    // Navigation properties
-    public ICollection<MachineOperationLog> OperationLogs { get; set; }
-}
-```
-
-**4. تحديث جدول الوصفات (Recipes):**
-
-```csharp
-public class Recipe
-{
-    public int Id { get; set; }                      // معرف الوصفة
-    public string Name { get; set; }                 // اسم الوصفة
-    public string Code { get; set; }                 // رمز الوصفة
-    public string Description { get; set; }          // وصف الوصفة
-    public float TankTemp { get; set; }              // درجة حرارة الخزان
-    public float FountainTemp { get; set; }          // درجة حرارة النافورة
-    public float MixerTemp { get; set; }             // درجة حرارة الخلاط
-    public bool Mixer { get; set; }                  // تفعيل الخلاط؟
-    public bool Fountain { get; set; }               // تفعيل النافورة؟
-    public float HeatingGoal { get; set; }           // هدف التسخين
-    public float CoolingGoal { get; set; }           // هدف التبريد
-    public float PouringGoal { get; set; }           // درجة حرارة الصب
-    public bool IsActive { get; set; } = true;       // هل الوصفة نشطة؟
-    public DateTime CreatedAt { get; set; }          // تاريخ الإنشاء
-    public int CreatedByOperatorId { get; set; }     // من أنشأ الوصفة
-    
-    // Navigation properties
-    public Operator CreatedByOperator { get; set; }  // ربط بالمشغل المنشئ
-    public ICollection<MachineOperationLog> OperationLogs { get; set; }
-}
-```
-
-**3. إنشاء Service للتعامل مع الأحداث:**
-```csharp
-public interface IEventLogService
-{
-    Task LogEventAsync(int machineId, EventTypeEnum eventType, 
-                      SeverityLevelEnum severity, string description, 
-                      EventData eventData = null);
-    
-    Task<IEnumerable<MachineOperationLog>> GetEventsByTypeAsync(
-        int machineId, EventTypeEnum eventType, DateTime from, DateTime to);
-    
-    Task<IEnumerable<MachineOperationLog>> GetEventsBySeverityAsync(
-        int machineId, SeverityLevelEnum severity, DateTime from, DateTime to);
-}
-
-public class EventLogService : IEventLogService
-{
-    private readonly DbContext _context;
-    private readonly ILogger<EventLogService> _logger;
-    
-    public async Task LogEventAsync(int machineId, EventTypeEnum eventType, 
-                                  SeverityLevelEnum severity, string description, 
-                                  EventData eventData = null)
-    {
-        var logEntry = new MachineOperationLog
-        {
-            MachineId = machineId,
-            EventType = eventType,
-            Severity = severity,
-            Description = description,
-            LogTime = DateTime.UtcNow,
-            EventData = eventData,
-            OperatorName = GetCurrentOperatorName()
-        };
+            status.Property(s => s.Name).HasColumnName("Status");
+            status.Property(s => s.Code).HasColumnName("StatusCode");
+        });
         
-        _context.MachineOperationLogs.Add(logEntry);
-        await _context.SaveChangesAsync();
-        
-        // Log to system logger
-        _logger.LogInformation(
-            "Machine {MachineId} event: {EventType} - {Description}", 
-            machineId, eventType, description);
-    }
-}
-```
-
-#### 📊 **أمثلة عملية في نظامك**
-
-**1. تسجيل بدء الإنتاج:**
-```csharp
-await eventLogService.LogEventAsync(
-    machineId: 1,
-    eventType: EventTypeEnum.ProductionStart,
-    severity: SeverityLevelEnum.Info,
-    description: "بدء إنتاج شوكولاتة داكنة",
-    eventData: new EventData
-    {
-        RecipeId = 1,                    // معرف الوصفة من جدول الوصفات
-        Temperature = 47.0m,
-        OperatorId = 5                    // معرف المشغل من جدول المشغلين
-    }
-);
-```
-
-**2. استعلام الأحداث مع معلومات الوصفة والمشغل:**
-```csharp
-// الحصول على أحداث الإنتاج مع تفاصيل الوصفة والمشغل
-var productionEvents = await context.MachineOperationLogs
-    .Include(log => log.EventData)
-    .ThenInclude(ed => ed.Recipe)
-    .Include(log => log.EventData)
-    .ThenInclude(ed => ed.Operator)
-    .Where(log => log.EventType == EventTypeEnum.ProductionStart)
-    .Select(log => new
-    {
-        LogTime = log.LogTime,
-        RecipeName = log.EventData.Recipe.Name,           // اسم الوصفة من الجدول
-        RecipeCode = log.EventData.Recipe.Code,           // رمز الوصفة
-        OperatorName = log.EventData.Operator.Name,       // اسم المشغل من الجدول
-        OperatorDepartment = log.EventData.Operator.Department,
-        Temperature = log.EventData.Temperature,
-        Description = log.Description
-    })
-    .ToListAsync();
-
-// عرض النتائج
-foreach (var evt in productionEvents)
-{
-    Console.WriteLine($"الوصفة: {evt.RecipeName} ({evt.RecipeCode})");
-    Console.WriteLine($"المشغل: {evt.OperatorName} - {evt.OperatorDepartment}");
-    Console.WriteLine($"درجة الحرارة: {evt.Temperature}°C");
-    Console.WriteLine($"الوقت: {evt.LogTime}");
-    Console.WriteLine("---");
-}
-```
-
-**2. تسجيل خطأ في جهاز الاستشعار:**
-```csharp
-await eventLogService.LogEventAsync(
-    machineId: 1,
-    eventType: EventTypeEnum.SensorError,
-    severity: SeverityLevelEnum.Error,
-    description: "جهاز استشعار درجة الحرارة لا يستجيب",
-    eventData: new EventData
-    {
-        CustomData = new Dictionary<string, object>
-        {
-            ["SensorId"] = 1,
-            ["SensorName"] = "Tank Bottom Temperature",
-            ["LastReading"] = 45.5m,
-            ["ErrorCode"] = "SENSOR_TIMEOUT"
-        }
-    }
-);
-```
-
-**3. استعلام الأحداث حسب النوع:**
-```csharp
-// الحصول على جميع أحداث الإنتاج في آخر ساعة
-var productionEvents = await eventLogService.GetEventsByTypeAsync(
-    machineId: 1,
-    eventType: EventTypeEnum.ProductionStart,
-    from: DateTime.UtcNow.AddHours(-1),
-    to: DateTime.UtcNow
-);
-
-// الحصول على جميع الأخطاء الخطيرة
-var criticalEvents = await eventLogService.GetEventsBySeverityAsync(
-    machineId: 1,
-    severity: SeverityLevelEnum.Critical,
-    from: DateTime.UtcNow.AddDays(-7),
-    to: DateTime.UtcNow
-);
-```
-
-**4. إنشاء البيانات الأولية (Seed Data):**
-
-```csharp
-// إنشاء المشغلين
-var operators = new List<Operator>
-{
-    new Operator
-    {
-        Id = 1,
-        Name = "أحمد محمد",
-        EmployeeId = "EMP001",
-        Department = "الإنتاج",
-        HireDate = new DateTime(2023, 1, 15),
-        ContactNumber = "+966501234567",
-        Email = "ahmed.mohamed@company.com",
-        IsActive = true
-    },
-    new Operator
-    {
-        Id = 2,
-        Name = "فاطمة علي",
-        EmployeeId = "EMP002",
-        Department = "مراقبة الجودة",
-        HireDate = new DateTime(2023, 3, 20),
-        ContactNumber = "+966507654321",
-        Email = "fatima.ali@company.com",
-        IsActive = true
-    },
-    new Operator
-    {
-        Id = 3,
-        Name = "محمد حسن",
-        EmployeeId = "EMP003",
-        Department = "الصيانة",
-        HireDate = new DateTime(2023, 6, 10),
-        ContactNumber = "+966509876543",
-        Email = "mohamed.hassan@company.com",
-        IsActive = true
-    }
-};
-
-// إنشاء الوصفات
-var recipes = new List<Recipe>
-{
-    new Recipe
-    {
-        Id = 1,
-        Name = "Dark Chocolate Premium",
-        Code = "DC-PREMIUM-001",
-        Description = "شوكولاتة داكنة عالية الجودة",
-        TankTemp = 47.0f,
-        FountainTemp = 45.0f,
-        MixerTemp = 46.0f,
-        Mixer = true,
-        Fountain = true,
-        HeatingGoal = 47.0f,
-        CoolingGoal = 45.0f,
-        PouringGoal = 45.0f,
-        IsActive = true,
-        CreatedAt = DateTime.UtcNow,
-        CreatedByOperatorId = 1  // أحمد محمد
-    },
-    new Recipe
-    {
-        Id = 2,
-        Name = "Milk Chocolate Classic",
-        Code = "MC-CLASSIC-002",
-        Description = "شوكولاتة بالحليب كلاسيكية",
-        TankTemp = 46.0f,
-        FountainTemp = 44.0f,
-        MixerTemp = 45.0f,
-        Mixer = true,
-        Fountain = true,
-        HeatingGoal = 46.0f,
-        CoolingGoal = 44.0f,
-        PouringGoal = 44.0f,
-        IsActive = true,
-        CreatedAt = DateTime.UtcNow,
-        CreatedByOperatorId = 2  // فاطمة علي
-    },
-    new Recipe
-    {
-        Id = 3,
-        Name = "White Chocolate Deluxe",
-        Code = "WC-DELUXE-003",
-        Description = "شوكولاتة بيضاء فاخرة",
-        TankTemp = 45.0f,
-        FountainTemp = 43.0f,
-        MixerTemp = 44.0f,
-        Mixer = true,
-        Fountain = true,
-        HeatingGoal = 45.0f,
-        CoolingGoal = 43.0f,
-        PouringGoal = 43.0f,
-        IsActive = true,
-        CreatedAt = DateTime.UtcNow,
-        CreatedByOperatorId = 1  // أحمد محمد
-    }
-};
-
-// حفظ البيانات في قاعدة البيانات
-context.Operators.AddRange(operators);
-context.Recipes.AddRange(recipes);
-await context.SaveChangesAsync();
-```
-
-**5. استعلامات متقدمة:**
-
-```csharp
-// الحصول على جميع الوصفات التي أنشأها مشغل معين
-var ahmedRecipes = await context.Recipes
-    .Include(r => r.CreatedByOperator)
-    .Where(r => r.CreatedByOperator.Name == "أحمد محمد")
-    .ToListAsync();
-
-// الحصول على جميع الأحداث التي قام بها مشغل معين
-var fatimaEvents = await context.MachineOperationLogs
-    .Include(log => log.EventData)
-    .ThenInclude(ed => ed.Operator)
-    .Include(log => log.EventData)
-    .ThenInclude(ed => ed.Recipe)
-    .Where(log => log.EventData.Operator.Name == "فاطمة علي")
-    .ToListAsync();
-
-// الحصول على إحصائيات المشغلين
-var operatorStats = await context.MachineOperationLogs
-    .Include(log => log.EventData)
-    .ThenInclude(ed => ed.Operator)
-    .GroupBy(log => log.EventData.Operator.Name)
-    .Select(g => new
-    {
-        OperatorName = g.Key,
-        TotalEvents = g.Count(),
-        ProductionEvents = g.Count(e => e.EventType == EventTypeEnum.ProductionStart),
-        ErrorEvents = g.Count(e => e.Severity == SeverityLevelEnum.Error),
-        LastActivity = g.Max(e => e.LogTime)
-    })
-    .ToListAsync();
-```
-
-#### 🎨 **فوائد هذا التصميم**
-
-1. **Type Safety:** لا يمكن إدخال قيم غير صحيحة
-2. **IntelliSense:** اقتراحات تلقائية أثناء التطوير
-3. **Performance:** مقارنة أسرع من النصوص
-4. **Maintainability:** سهولة إضافة أنواع جديدة
-5. **Localization:** دعم متعدد اللغات
-6. **Validation:** تحقق تلقائي من صحة البيانات
-7. **Reporting:** تجميع وتحليل دقيق للأحداث
-8. **Data Integrity:** ربط البيانات بالجداول الصحيحة
-9. **Audit Trail:** تتبع كامل لمن أنشأ ماذا ومتى
-10. **Scalability:** سهولة إضافة مشغلين ووصفات جديدة
-
-#### 🗄️ **SQL Schema للجداول الجديدة**
-
-```sql
--- جدول المشغلين
-CREATE TABLE Operators (
-    Id INT PRIMARY KEY IDENTITY(1,1),
-    Name NVARCHAR(100) NOT NULL,
-    EmployeeId NVARCHAR(20) UNIQUE NOT NULL,
-    Department NVARCHAR(50) NOT NULL,
-    IsActive BIT DEFAULT 1,
-    HireDate DATE NOT NULL,
-    ContactNumber NVARCHAR(20),
-    Email NVARCHAR(100),
-    CreatedAt DATETIME2 DEFAULT GETUTCDATE()
-);
-
--- جدول الوصفات (محدث)
-CREATE TABLE Recipes (
-    Id INT PRIMARY KEY IDENTITY(1,1),
-    Name NVARCHAR(100) NOT NULL,
-    Code NVARCHAR(20) UNIQUE NOT NULL,
-    Description NVARCHAR(500),
-    TankTemp FLOAT NOT NULL,
-    FountainTemp FLOAT NOT NULL,
-    MixerTemp FLOAT NOT NULL,
-    Mixer BIT DEFAULT 1,
-    Fountain BIT DEFAULT 1,
-    HeatingGoal FLOAT NOT NULL,
-    CoolingGoal FLOAT NOT NULL,
-    PouringGoal FLOAT NOT NULL,
-    IsActive BIT DEFAULT 1,
-    CreatedAt DATETIME2 DEFAULT GETUTCDATE(),
-    CreatedByOperatorId INT NOT NULL,
-    FOREIGN KEY (CreatedByOperatorId) REFERENCES Operators(Id)
-);
-
--- جدول سجل العمليات (محدث)
-CREATE TABLE MachineOperationLogs (
-    LogId BIGINT PRIMARY KEY IDENTITY(1,1),
-    MachineId INT NOT NULL,
-    EventType INT NOT NULL,  -- EventTypeEnum
-    Description NVARCHAR(500) NOT NULL,
-    LogTime DATETIME2 NOT NULL,
-    Severity INT NOT NULL,   -- SeverityLevelEnum
-    OperatorName NVARCHAR(100),  -- للتوافق مع النظام القديم
-    AdditionalData NVARCHAR(MAX), -- JSON data
-    FOREIGN KEY (MachineId) REFERENCES Machines(Id)
-);
-
--- جدول بيانات الأحداث
-CREATE TABLE EventData (
-    Id BIGINT PRIMARY KEY IDENTITY(1,1),
-    LogId BIGINT NOT NULL,
-    RecipeId INT NULL,
-    Temperature DECIMAL(10,2) NULL,
-    OperatorId INT NULL,
-    CustomData NVARCHAR(MAX), -- JSON data
-    FOREIGN KEY (LogId) REFERENCES MachineOperationLogs(LogId),
-    FOREIGN KEY (RecipeId) REFERENCES Recipes(Id),
-    FOREIGN KEY (OperatorId) REFERENCES Operators(Id)
-);
-
--- إنشاء الفهارس
-CREATE INDEX IX_Operators_EmployeeId ON Operators(EmployeeId);
-CREATE INDEX IX_Recipes_Code ON Recipes(Code);
-CREATE INDEX IX_Recipes_CreatedByOperatorId ON Recipes(CreatedByOperatorId);
-CREATE INDEX IX_MachineOperationLogs_MachineId ON MachineOperationLogs(MachineId);
-CREATE INDEX IX_MachineOperationLogs_EventType ON MachineOperationLogs(EventType);
-CREATE INDEX IX_MachineOperationLogs_LogTime ON MachineOperationLogs(LogTime);
-CREATE INDEX IX_EventData_RecipeId ON EventData(RecipeId);
-CREATE INDEX IX_EventData_OperatorId ON EventData(OperatorId);
-```
-
-#### 🔄 **مزايا الربط بدلاً من النصوص**
-
-| النهج القديم (نصوص) | النهج الجديد (روابط) | الفائدة |
-|---------------------|----------------------|----------|
-| `RecipeName = "Dark Chocolate"` | `RecipeId = 1` | **تحديث مركزي:** تغيير اسم الوصفة في مكان واحد |
-| `OperatorName = "أحمد محمد"` | `OperatorId = 1` | **تتبع التغييرات:** معرفة متى تم تغيير اسم المشغل |
-| **مشاكل:** أخطاء كتابية، تكرار، صعوبة التجميع | **حلول:** ربط دقيق، تحديث تلقائي، تجميع سهل | **نتيجة:** نظام أكثر دقة واحترافية |
-
-**هذا التصميم يعطيك نظام تسجيل أحداث احترافي ومتقدم! 🚀**
-
-**Purpose:** Provides aggregated sensor data for dashboard display
-
-```csharp
-public class SensorReadingSummary
-{
-    public int SensorId { get; set; }               // Which sensor
-    public string SensorName { get; set; }           // Human-readable name
-    public decimal CurrentValue { get; set; }        // Latest reading
-    public decimal MinValue { get; set; }            // Minimum in period
-    public decimal MaxValue { get; set; }            // Maximum in period
-    public decimal AverageValue { get; set; }        // Average in period
-    public DateTime LastUpdate { get; set; }         // When last updated
-    public bool IsOnline { get; set; }               // Sensor status
-    public string Status { get; set; }               // "Normal", "Warning", "Error"
-}
-```
-
-**Real Example:**
-```csharp
-var tankBottomSummary = new SensorReadingSummary
-{
-    SensorId = 1,
-    SensorName = "Tank Bottom Temperature",
-    CurrentValue = 45.5m,        // Current: 45.5°C
-    MinValue = 44.2m,            // Min in last hour: 44.2°C
-    MaxValue = 46.8m,            // Max in last hour: 46.8°C
-    AverageValue = 45.3m,        // Average in last hour: 45.3°C
-    LastUpdate = DateTime.UtcNow, // Just updated
-    IsOnline = true,              // Sensor is working
-    Status = "Normal"             // Temperature is within range
-};
-```
-
-### 🔗 **How All Classes Work Together**
-
-#### 📊 **Data Flow Example:**
-
-1. **ModBusMaster** reads temperature from PLC (Address 8)
-2. **Sensor** provides configuration (Tank Bottom Temp, range -14°C to 65°C)
-3. **SensorReading** stores the value (45.5°C at 10:00:00)
-4. **SensorReadingSummary** calculates statistics (min, max, average)
-5. **Recipe** provides target temperature (47.0°C)
-6. **MachineConfig** enforces safety limits (max 65°C)
-7. **Machine** groups all sensors together
-8. **SensorType** categorizes as "Temperature" sensor
-
-#### 🎯 **Dashboard Display Example:**
-
-```csharp
-// Get all sensors for a machine
-var machine = await context.Machines
-    .Include(m => m.Sensors)
-    .ThenInclude(s => s.SensorType)
-    .FirstAsync(m => m.Id == 1);
-
-// Get current readings for all sensors
-var summaries = await context.Sensors
-    .Where(s => s.MachineId == machine.Id)
-    .Select(s => new SensorReadingSummary
-    {
-        SensorId = s.Id,
-        SensorName = s.Name,
-        CurrentValue = s.Readings.OrderByDescending(r => r.Timestamp).First().Value,
-        LastUpdate = s.Readings.OrderByDescending(r => r.Timestamp).First().Timestamp,
-        IsOnline = s.IsActive,
-        Status = GetSensorStatus(s) // Custom logic based on values and limits
-    })
-    .ToListAsync();
-
-// Display in dashboard
-foreach (var summary in summaries)
-{
-    Console.WriteLine($"{summary.SensorName}: {summary.CurrentValue}°C - {summary.Status}");
-}
-```
-
-### 🎨 **Class Diagram Benefits**
-
-1. **Clear Separation of Concerns:** Each class has one responsibility
-2. **Easy to Extend:** Add new sensor types, machines, or recipes
-3. **Type Safety:** Use enums instead of strings for sensor types
-4. **Performance:** Efficient queries with proper relationships
-5. **Maintainability:** Easy to understand and modify
-6. **Scalability:** Handle multiple machines and sensor types
-7. **Testing:** Each class can be tested independently
-
-This architecture gives you a **professional, enterprise-grade** sensor management system that's both powerful and easy to use! 🚀
-
-```sql
--- Sensors table (static information)
-CREATE TABLE Sensors (
-    Id INT PRIMARY KEY IDENTITY(1,1),
-    SensorType INT NOT NULL,
-    Name NVARCHAR(100) NOT NULL,
-    ModBusAddress INT NOT NULL,
-    UnitType INT NOT NULL,
-    IsActive BIT DEFAULT 1,
-    CreatedAt DATETIME2 DEFAULT GETUTCDATE()
-);
-
--- SensorReadings table (time-series data)
-CREATE TABLE SensorReadings (
-    Id BIGINT PRIMARY KEY IDENTITY(1,1),
-    SensorId INT NOT NULL,
-    Timestamp DATETIME2 NOT NULL,
-    Value DECIMAL(10,2) NOT NULL,
-    IsValid BIT DEFAULT 1,
-    FOREIGN KEY (SensorId) REFERENCES Sensors(Id)
-);
-
--- Performance indexes
-CREATE INDEX IX_SensorReadings_SensorId_Timestamp 
-ON SensorReadings(SensorId, Timestamp DESC);
-
-CREATE UNIQUE INDEX IX_Sensors_ModBusAddress 
-ON Sensors(ModBusAddress);
-```
-
-## 🎛️ Dashboard Recipe Management
-
-### 📋 Recipe Control Workflow
-
-The NexusCore dashboard provides comprehensive recipe management capabilities, allowing operators to read, create, and modify machine parameters directly from the web interface.
-
-#### 🔄 **Dashboard Recipe Operations**
-
-| Operation | Description | Dashboard Action |
-|-----------|-------------|------------------|
-| **Read Recipe** | Display current recipe parameters | View recipe details, temperature settings, timing |
-| **Add Recipe** | Create new recipe in machine database | Form input → Validation → Database storage |
-| **Modify Parameters** | Update heating/cooling/pouring settings | Real-time parameter adjustment with validation |
-
-#### 🏗️ **Recipe Management Architecture**
-
-```mermaid
-graph TD
-    A[Dashboard UI] --> B[Recipe Service]
-    B --> C[Recipe Validation]
-    C --> D[Database Update]
-    D --> E[Machine Configuration]
-    E --> F[ModBus Communication]
-    F --> G[PLC Controller]
-    
-    H[Recipe Table] --> I[Recipe Service]
-    I --> J[Parameter Validation]
-    J --> K[MachineConfig Update]
-    K --> L[Real-time Control]
-```
-
-#### 📊 **Dashboard Recipe Interface**
-
-```csharp
-// Dashboard Recipe Controller
-[ApiController]
-[Route("api/[controller]")]
-public class RecipeController : ControllerBase
-{
-    [HttpGet]
-    public async Task<ActionResult<List<Recipe>>> GetAllRecipes()
-    {
-        // Read all recipes from database
-        var recipes = await _recipeService.GetAllRecipesAsync();
-        return Ok(recipes);
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<Recipe>> CreateRecipe([FromBody] CreateRecipeDto dto)
-    {
-        // Add new recipe to machine database
-        var recipe = await _recipeService.CreateRecipeAsync(dto);
-        return CreatedAtAction(nameof(GetRecipe), new { id = recipe.Id }, recipe);
-    }
-
-    [HttpPut("{id}/parameters")]
-    public async Task<ActionResult> UpdateRecipeParameters(int id, [FromBody] UpdateParametersDto dto)
-    {
-        // Modify heating/cooling/pouring parameters
-        await _recipeService.UpdateRecipeParametersAsync(id, dto);
-        return NoContent();
-    }
-}
-```
-
-#### 🔧 **Recipe Parameter Modification**
-
-```csharp
-// Recipe Parameter Update Service
-public class RecipeParameterService
-{
-    public async Task UpdateHeatingParametersAsync(int recipeId, HeatingParametersDto dto)
-    {
-        var recipe = await _recipeRepository.GetByIdAsync(recipeId);
-        
-        // Update recipe parameters
-        recipe.HeatingTemperature = dto.Temperature;
-        recipe.HeatingDuration = dto.Duration;
-        recipe.HeatingRampRate = dto.RampRate;
-        
-        // Update machine configuration
-        var machineConfig = await _machineConfigService.GetActiveConfigAsync();
-        machineConfig.TankMaxHeat = dto.Temperature;
-        machineConfig.HeatingProfile = dto.Profile;
-        
-        // Save changes
-        await _unitOfWork.SaveChangesAsync();
-        
-        // Notify ModBus service of parameter changes
-        await _modBusService.UpdateHeatingParametersAsync(dto);
-    }
-}
-```
-
-#### 📱 **Dashboard UI Components**
-
-```csharp
-// Blazor Recipe Management Component
-@page "/recipes"
-@inject IRecipeService RecipeService
-
-<div class="recipe-management">
-    <h3>Recipe Management</h3>
-    
-    <!-- Recipe List -->
-    <div class="recipe-list">
-        @foreach (var recipe in recipes)
-        {
-            <div class="recipe-card">
-                <h4>@recipe.Name</h4>
-                <p>Code: @recipe.Code</p>
-                <p>Temperature: @recipe.HeatingTemperature°C</p>
-                <button @onclick="() => EditRecipe(recipe.Id)">Edit</button>
-            </div>
-        }
-    </div>
-    
-    <!-- Add New Recipe -->
-    <div class="add-recipe">
-        <h4>Add New Recipe</h4>
-        <EditForm Model="@newRecipe" OnValidSubmit="CreateRecipe">
-            <DataAnnotationsValidator />
-            <InputText @bind-Value="newRecipe.Name" placeholder="Recipe Name" />
-            <InputNumber @bind-Value="newRecipe.HeatingTemperature" placeholder="Temperature" />
-            <InputNumber @bind-Value="newRecipe.CoolingTemperature" placeholder="Cooling Temp" />
-            <InputNumber @bind-Value="newRecipe.PouringDuration" placeholder="Pouring Duration" />
-            <button type="submit">Create Recipe</button>
-        </EditForm>
-    </div>
-</div>
-```
-
-#### 🔄 **Real-time Parameter Updates**
-
-```csharp
-// SignalR Hub for Real-time Updates
-public class RecipeHub : Hub
-{
-    public async Task UpdateRecipeParameters(int recipeId, string parameter, object value)
-    {
-        // Update recipe in database
-        await _recipeService.UpdateParameterAsync(recipeId, parameter, value);
-        
-        // Update machine configuration
-        await _machineConfigService.UpdateParameterAsync(parameter, value);
-        
-        // Notify all connected clients
-        await Clients.All.SendAsync("RecipeParameterUpdated", recipeId, parameter, value);
-        
-        // Send command to ModBus service
-        await _modBusService.SendParameterUpdateAsync(parameter, value);
-    }
-}
-```
-
-#### 📊 **Recipe Validation & Safety**
-
-```csharp
-// Recipe Parameter Validation
-public class RecipeValidator : AbstractValidator<CreateRecipeDto>
-{
-    public RecipeValidator()
-    {
-        RuleFor(x => x.HeatingTemperature)
-            .InclusiveBetween(-14, 65)
-            .WithMessage("Temperature must be between -14°C and 65°C");
+        // Relationships
+        builder.HasOne(m => m.Branch)
+            .WithMany()
+            .HasForeignKey(m => m.BranchRef)
+            .OnDelete(DeleteBehavior.Restrict);
             
-        RuleFor(x => x.CoolingTemperature)
-            .LessThan(x => x.HeatingTemperature)
-            .WithMessage("Cooling temperature must be lower than heating temperature");
+        builder.HasOne(m => m.Type)
+            .WithMany(t => t.Machines)
+            .HasForeignKey(m => m.MachineTypeRef)
+            .OnDelete(DeleteBehavior.Restrict);
             
-        RuleFor(x => x.PouringDuration)
-            .InclusiveBetween(1, 300)
-            .WithMessage("Pouring duration must be between 1 and 300 seconds");
+        // Collections
+        builder.HasMany(m => m.Sensors)
+            .WithOne(s => s.Machine)
+            .HasForeignKey(s => s.MachineRef)
+            .OnDelete(DeleteBehavior.Cascade);
+            
+        builder.HasMany(m => m.OperationLogs)
+            .WithOne(l => l.Machine)
+            .HasForeignKey(l => l.MachineRef)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
 ```
 
-#### 🎯 **Benefits of Dashboard Recipe Management**
+### 📊 Domain Events Table
 
-| Benefit | Description |
-|---------|-------------|
-| **Centralized Control** | All recipe operations from single interface |
-| **Real-time Updates** | Immediate parameter changes without restart |
-| **Validation & Safety** | Built-in parameter validation and limits |
-| **Audit Trail** | Complete history of recipe modifications |
-| **Operator Efficiency** | Quick recipe switching and parameter adjustment |
-| **Quality Control** | Consistent parameter application across batches |
-
----
+```sql
+CREATE TABLE DomainEvents (
+    Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    AggregateId UNIQUEIDENTIFIER NOT NULL,
+    AggregateType NVARCHAR(255) NOT NULL,
+    EventType NVARCHAR(255) NOT NULL,
+    EventData NVARCHAR(MAX) NOT NULL, -- JSON
+    OccurredAt DATETIME2 NOT NULL,
+    ProcessedAt DATETIME2 NULL,
+    UserId NVARCHAR(255) NULL,
+    CorrelationId UNIQUEIDENTIFIER NULL,
+    INDEX IX_DomainEvents_AggregateId (AggregateId),
+    INDEX IX_DomainEvents_OccurredAt (OccurredAt),
+    INDEX IX_DomainEvents_ProcessedAt (ProcessedAt) WHERE ProcessedAt IS NULL
+);
+```
 
 ## 🚀 Getting Started
 
 ### 📋 Prerequisites
 
-- **.NET 8.0 SDK** or later
-- **SQL Server 2019** or later (or SQL Server Express)
-- **Visual Studio 2022** or **VS Code**
+- **.NET 9.0 SDK** or later
+- **SQL Server 2022** or later
+- **Visual Studio 2022 17.8+** or **VS Code**
+- **Docker** (optional, for containerized deployment)
 - **ModBus RTU compatible hardware**
 
 ### 🔧 Installation
@@ -1490,433 +512,750 @@ public class RecipeValidator : AbstractValidator<CreateRecipeDto>
    cd NexusCore
    ```
 
-2. **Restore dependencies**
+2. **Configure environment**
    ```bash
-   dotnet restore
+   # Development
+   dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=localhost;Database=NexusCore;Trusted_Connection=true;TrustServerCertificate=true"
+   
+   # Production
+   export ConnectionStrings__DefaultConnection="Server=prod-server;Database=NexusCore;User Id=sa;Password=YourPassword;TrustServerCertificate=true"
    ```
 
-3. **Configure database connection**
-   ```json
-   // appsettings.json
-   {
-     "ConnectionStrings": {
-       "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=NexusCore;Trusted_Connection=true;MultipleActiveResultSets=true"
-     }
-   }
+3. **Run database migrations**
+   ```bash
+   dotnet ef database update -p src/Infrastructure/NexusCore.Infrastructure -s src/NexusCore.Dashboard.API
    ```
 
-4. **Run database migrations**
+4. **Seed initial data**
    ```bash
-   dotnet ef database update
+   dotnet run --project src/NexusCore.Dashboard.API -- --seed
    ```
 
 5. **Start the application**
    ```bash
-   dotnet run
+   dotnet run --project src/NexusCore.Dashboard.API
    ```
 
-### 🎯 Quick Start Example
+### 🎯 Domain-Driven Usage Examples
 
 ```csharp
-// Initialize sensor service
-var sensorService = new SensorService(context, modbusService);
-
-// Register a new sensor
-var sensor = await sensorService.RegisterSensorAsync(
-    "Tank Bottom Temperature",
-    SensorTypeEnum.TankBottomTemp,
-    8
-);
-
-// Record a temperature reading
-var reading = await sensorService.RecordReadingAsync(
-    sensor.Id, 
-    45.5m
-);
-
-// Get current status
-var status = await sensorService.GetCurrentStatusAsync(sensor.Id);
-Console.WriteLine($"Current temperature: {status.CurrentValue}°C");
+// Machine operations with domain logic
+public class MachineService
+{
+    public async Task StartProductionAsync(Guid machineId, Guid recipeId, string batchNumber, string operatorName)
+    {
+        var machine = await _machineRepository.GetByIdAsync(machineId);
+        var recipe = await _recipeRepository.GetByIdAsync(recipeId);
+        
+        // Domain logic enforced in entity
+        machine.StartProduction(recipe, batchNumber, operatorName);
+        
+        // Save changes and publish domain events
+        await _unitOfWork.SaveChangesAsync();
+        
+        // Domain events are automatically published
+        // e.g., ProductionStartedEvent, MachineStatusChangedEvent
+    }
+    
+    public async Task HandleSensorErrorAsync(Guid machineId, Guid sensorId, string errorCode)
+    {
+        var machine = await _machineRepository.GetByIdAsync(machineId);
+        var sensor = machine.Sensors.FirstOrDefault(s => s.SensorRef == sensorId);
+        
+        if (sensor != null)
+        {
+            // Business rule: Critical sensors cause machine error
+            if (IsCriticalSensor(sensor))
+            {
+                machine.ReportError(
+                    $"Critical sensor {sensor.Name} failed", 
+                    errorCode, 
+                    "System");
+            }
+            
+            await _unitOfWork.SaveChangesAsync();
+        }
+    }
+}
 ```
 
 ## 📚 API Documentation
 
-### 🔌 Sensor Endpoints
+### 🎯 Command/Query Separation (CQRS)
 
-#### Get Sensor Status
-```http
-GET /api/sensors/{id}/status
-```
+#### Commands (Write Operations)
 
-**Response:**
-```json
+```csharp
+// Start Production Command
+public class StartProductionCommand : IRequest<Result>
 {
-  "sensorId": 1,
-  "name": "Tank Bottom Temperature",
-  "currentValue": 45.5,
-  "unit": "°C",
-  "lastUpdate": "2024-01-15T10:00:00Z",
-  "isOnline": true,
-  "status": "Normal"
+    public Guid MachineId { get; set; }
+    public Guid RecipeId { get; set; }
+    public string BatchNumber { get; set; }
+    public string OperatorName { get; set; }
+}
+
+// Command Handler
+public class StartProductionCommandHandler : IRequestHandler<StartProductionCommand, Result>
+{
+    public async Task<Result> Handle(StartProductionCommand request, CancellationToken cancellationToken)
+    {
+        var machine = await _machineRepository.GetByIdAsync(request.MachineId);
+        var recipe = await _recipeRepository.GetByIdAsync(request.RecipeId);
+        
+        // Execute domain logic
+        machine.StartProduction(recipe, request.BatchNumber, request.OperatorName);
+        
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        return Result.Success();
+    }
 }
 ```
 
-#### Get Historical Readings
-```http
-GET /api/sensors/{id}/readings?from=2024-01-01&to=2024-01-15
-```
+#### Queries (Read Operations)
 
-#### Record New Reading
-```http
-POST /api/sensors/{id}/readings
-Content-Type: application/json
-
+```csharp
+// Get Machine Status Query
+public class GetMachineStatusQuery : IRequest<MachineStatusDto>
 {
-  "value": 45.5,
-  "timestamp": "2024-01-15T10:00:00Z"
+    public Guid MachineId { get; set; }
+}
+
+// Query Handler
+public class GetMachineStatusQueryHandler : IRequestHandler<GetMachineStatusQuery, MachineStatusDto>
+{
+    public async Task<MachineStatusDto> Handle(GetMachineStatusQuery request, CancellationToken cancellationToken)
+    {
+        var result = await _context.Machines
+            .Where(m => m.Id == request.MachineId)
+            .Select(m => new MachineStatusDto
+            {
+                MachineId = m.Id,
+                Status = m.Status.Name,
+                StatusCode = m.Status.Code,
+                IsPowered = m.Status.IsPowered,
+                CanAcceptCommands = m.Status.CanAcceptCommands,
+                CurrentRecipe = m.CurrentRecipe != null ? new RecipeDto
+                {
+                    Id = m.CurrentRecipe.Id,
+                    Name = m.CurrentRecipe.Name,
+                    HeatingTemperature = m.CurrentRecipe.HeatingTemperature
+                } : null,
+                CurrentBatchNumber = m.CurrentBatchNumber,
+                ProductionStartedAt = m.ProductionStartedAt,
+                TotalOperatingHours = m.TotalOperatingHours,
+                IsMaintenanceDue = m.NextMaintenanceDate <= DateTime.UtcNow,
+                Sensors = m.Sensors.Select(s => new SensorStatusDto
+                {
+                    SensorId = s.Id,
+                    Name = s.Name,
+                    IsActive = s.IsActive,
+                    IsCalibrationDue = s.IsCalibrationDue(),
+                    LatestReading = s.GetLatestReading()
+                }).ToList()
+            })
+            .FirstOrDefaultAsync(cancellationToken);
+            
+        return result;
+    }
 }
 ```
 
-### 🎛️ Control Endpoints
+### 🔌 REST API Endpoints
 
-#### Set Temperature Target
+#### Machine Operations
 ```http
-POST /api/control/temperature
+POST /api/machines/{id}/start-production
 Content-Type: application/json
+Authorization: Bearer {token}
 
 {
-  "sensorId": 1,
-  "targetValue": 47.0,
-  "mode": "Auto"
+  "recipeId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "batchNumber": "BATCH-2024-001",
+  "operatorName": "John Doe"
+}
+```
+
+#### Machine Status
+```http
+GET /api/machines/{id}/status
+Authorization: Bearer {token}
+
+Response:
+{
+  "machineId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "status": "Producing",
+  "statusCode": 7,
+  "isPowered": true,
+  "canAcceptCommands": true,
+  "currentRecipe": {
+    "id": "123e4567-e89b-12d3-a456-426614174000",
+    "name": "Dark Chocolate Premium",
+    "heatingTemperature": 47.0
+  },
+  "currentBatchNumber": "BATCH-2024-001",
+  "productionStartedAt": "2024-01-15T10:30:00Z",
+  "totalOperatingHours": 1250.5,
+  "isMaintenanceDue": false,
+  "sensors": [
+    {
+      "sensorId": "sensor-1",
+      "name": "Tank Bottom Temperature",
+      "isActive": true,
+      "isCalibrationDue": false,
+      "latestReading": 45.5
+    }
+  ]
 }
 ```
 
 #### Emergency Stop
 ```http
-POST /api/control/emergency-stop
+POST /api/machines/{id}/emergency-stop
+Authorization: Bearer {token}
+
+{
+  "reason": "Safety concern detected",
+  "triggeredBy": "Operator"
+}
+```
+
+## 🎯 Domain Events & Integration
+
+### 📡 Event-Driven Architecture
+
+```csharp
+// Domain Event
+public class MachineStatusChangedEvent : IDomainEvent
+{
+    public Guid MachineId { get; }
+    public string OldStatus { get; }
+    public string NewStatus { get; }
+    public DateTime OccurredAt { get; }
+    public string TriggeredBy { get; }
+    
+    public MachineStatusChangedEvent(Guid machineId, string oldStatus, string newStatus, string triggeredBy)
+    {
+        MachineId = machineId;
+        OldStatus = oldStatus;
+        NewStatus = newStatus;
+        TriggeredBy = triggeredBy;
+        OccurredAt = DateTime.UtcNow;
+    }
+}
+
+// Event Handler
+public class MachineStatusChangedEventHandler : INotificationHandler<MachineStatusChangedEvent>
+{
+    public async Task Handle(MachineStatusChangedEvent notification, CancellationToken cancellationToken)
+    {
+        // Update dashboard via SignalR
+        await _hubContext.Clients.All.SendAsync("MachineStatusChanged", new
+        {
+            notification.MachineId,
+            notification.NewStatus,
+            notification.OccurredAt
+        });
+        
+        // Log to audit trail
+        await _auditService.LogAsync(new AuditEntry
+        {
+            EntityType = "Machine",
+            EntityId = notification.MachineId,
+            Action = "StatusChanged",
+            OldValue = notification.OldStatus,
+            NewValue = notification.NewStatus,
+            UserId = notification.TriggeredBy,
+            Timestamp = notification.OccurredAt
+        });
+        
+        // Send alerts if needed
+        if (notification.NewStatus == "Error")
+        {
+            await _alertService.SendCriticalAlertAsync(
+                $"Machine {notification.MachineId} entered error state",
+                AlertPriority.High);
+        }
+    }
+}
+```
+
+### 🔄 Integration Events
+
+```csharp
+// Integration Event for external systems
+public class ProductionCompletedIntegrationEvent : IntegrationEvent
+{
+    public Guid MachineId { get; set; }
+    public string BatchNumber { get; set; }
+    public Guid RecipeId { get; set; }
+    public int UnitsProduced { get; set; }
+    public decimal TotalOperatingHours { get; set; }
+    public DateTime StartedAt { get; set; }
+    public DateTime CompletedAt { get; set; }
+    public Dictionary<string, object> QualityMetrics { get; set; }
+}
+
+// Publish to message broker
+public class IntegrationEventService : IIntegrationEventService
+{
+    private readonly IServiceBus _serviceBus;
+    
+    public async Task PublishAsync(IntegrationEvent @event)
+    {
+        var message = new Message
+        {
+            MessageId = @event.Id.ToString(),
+            Body = JsonSerializer.SerializeToUtf8Bytes(@event),
+            Label = @event.GetType().Name,
+            CorrelationId = @event.CorrelationId
+        };
+        
+        await _serviceBus.SendAsync(message);
+    }
+}
 ```
 
 ## ⚙️ Configuration
 
-### 🔧 Application Settings
+### 🔧 Domain Configuration
 
 ```json
 {
-  "NexusCore": {
-    "SensorPollingInterval": 30000,
-    "DataRetentionDays": 30,
-    "AlertThresholds": {
-      "TemperatureHigh": 60,
-      "TemperatureLow": -10,
-      "ResponseTimeout": 5000
+  "DomainSettings": {
+    "Machine": {
+      "MaxOperatingTemperature": 65.0,
+      "MinOperatingTemperature": -14.0,
+      "DefaultMaintenanceIntervalHours": 720,
+      "MaxContinuousOperatingHours": 168
     },
-    "Localization": {
-      "DefaultLanguage": "en",
-      "SupportedLanguages": ["en", "ar"]
+    "Sensor": {
+      "DefaultCalibrationIntervalDays": 90,
+      "ReadingStaleThresholdSeconds": 60,
+      "MaxReadingsToKeep": 10000
+    },
+    "Recipe": {
+      "DefaultTemperatureTolerance": 2.0,
+      "MaxStepsPerRecipe": 20,
+      "RequireApprovalForProduction": true
+    },
+    "Production": {
+      "MinBatchDurationMinutes": 5,
+      "MaxBatchDurationHours": 24,
+      "AutoStopOnError": true
+    }
+  },
+  "IntegrationSettings": {
+    "ServiceBus": {
+      "ConnectionString": "Endpoint=sb://nexuscore.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=xxx",
+      "TopicName": "nexuscore-events"
+    },
+    "SignalR": {
+      "HubUrl": "/hubs/machine-status",
+      "EnableDetailedErrors": false
     }
   }
 }
 ```
 
-### 🌍 Localization Support
+### 🌍 Multi-Language Support
 
 ```csharp
-// English
-"Temperature": "Temperature",
-"Current Value": "Current Value",
-"Status": "Status"
-
-// Arabic
-"Temperature": "درجة الحرارة",
-"Current Value": "القيمة الحالية",
-"Status": "الحالة"
-```
-
-## 🧪 Testing
-
-### 🧪 Unit Tests
-
-```bash
-# Run all tests
-dotnet test
-
-# Run specific test project
-dotnet test NexusCore.Tests
-
-# Run with coverage
-dotnet test --collect:"XPlat Code Coverage"
-```
-
-### 🧪 Integration Tests
-
-```bash
-# Run integration tests
-dotnet test NexusCore.IntegrationTests
-
-# Run with test database
-dotnet test --environment Testing
-```
-
-### 🧪 Test Examples
-
-```csharp
-[TestClass]
-public class SensorServiceTests
+// Domain Exception Messages
+public class DomainExceptionMessages
 {
-    [TestMethod]
-    public async Task RecordReading_ValidTemperature_SavesSuccessfully()
+    public static string GetMessage(string key, string culture = "en")
     {
-        // Arrange
-        var context = GetInMemoryContext();
-        var service = new SensorService(context, null);
-        var sensor = new Sensor 
-        { 
-            Id = 1, 
-            SensorType = SensorTypeEnum.TankBottomTemp,
-            UnitType = MeasurementUnitType.Temperature 
+        return culture switch
+        {
+            "ar" => key switch
+            {
+                "CannotStartProductionInCurrentStatus" => "لا يمكن بدء الإنتاج في الحالة الحالية",
+                "RecipeNotApprovedForProduction" => "الوصفة غير معتمدة للإنتاج",
+                "MachineNotOfflineForMaintenance" => "يجب إيقاف الماكينة قبل الصيانة",
+                "SensorCalibrationOverdue" => "يجب معايرة جهاز الاستشعار",
+                _ => key
+            },
+            _ => key switch
+            {
+                "CannotStartProductionInCurrentStatus" => "Cannot start production in current status",
+                "RecipeNotApprovedForProduction" => "Recipe is not approved for production",
+                "MachineNotOfflineForMaintenance" => "Machine must be offline for maintenance",
+                "SensorCalibrationOverdue" => "Sensor calibration is overdue",
+                _ => key
+            }
         };
-        context.Sensors.Add(sensor);
-        await context.SaveChangesAsync();
-        
-        // Act
-        var reading = await service.RecordReadingAsync(1, 45.5m);
-        
-        // Assert
-        Assert.IsNotNull(reading);
-        Assert.AreEqual(45.5m, reading.Value);
-        Assert.AreEqual(1, await context.SensorReadings.CountAsync());
     }
 }
 ```
 
-## 📊 Performance & Monitoring
+## 🧪 Testing Strategy
 
-### 🚀 Performance Optimization
-
-- **Async Operations**: Non-blocking I/O for responsiveness
-- **Bulk Operations**: Efficient data processing for high-frequency sensors
-- **Database Indexing**: Optimized queries for time-series data
-- **Memory Management**: Efficient data structures and caching
-
-### 📈 Monitoring Features
-
-- **Real-time Metrics**: Live performance indicators
-- **Historical Analysis**: Trend analysis and reporting
-- **Alert System**: Configurable notifications for critical events
-- **Health Checks**: System status monitoring
-
-### 🔍 Data Retention Policy
+### 🧪 Domain Unit Tests
 
 ```csharp
-// Clean up old readings periodically
-public async Task CleanupOldReadingsAsync(int daysToKeep = 30)
+[TestClass]
+public class MachineTests
 {
-    var cutoffDate = DateTime.UtcNow.AddDays(-daysToKeep);
+    [TestMethod]
+    public void StartProduction_WhenMachineIsIdle_ShouldTransitionToProducing()
+    {
+        // Arrange
+        var machine = new MachineBuilder()
+            .WithStatus(MachineStatus.Idle)
+            .Build();
+            
+        var recipe = new RecipeBuilder()
+            .WithApproval("QA Manager")
+            .Build();
+            
+        // Act
+        machine.StartProduction(recipe, "BATCH-001", "Operator");
+        
+        // Assert
+        Assert.AreEqual(MachineStatus.Producing, machine.Status);
+        Assert.AreEqual(recipe, machine.CurrentRecipe);
+        Assert.AreEqual("BATCH-001", machine.CurrentBatchNumber);
+        Assert.IsNotNull(machine.ProductionStartedAt);
+    }
     
-    await _context.SensorReadings
-        .Where(r => r.Timestamp < cutoffDate)
-        .ExecuteDeleteAsync();
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void StartProduction_WhenMachineIsOffline_ShouldThrowException()
+    {
+        // Arrange
+        var machine = new MachineBuilder()
+            .WithStatus(MachineStatus.Offline)
+            .Build();
+            
+        var recipe = new RecipeBuilder().Build();
+        
+        // Act
+        machine.StartProduction(recipe, "BATCH-001", "Operator");
+        
+        // Assert - Exception expected
+    }
+}
+```
+
+### 🧪 Integration Tests
+
+```csharp
+[TestClass]
+public class MachineIntegrationTests : IntegrationTestBase
+{
+    [TestMethod]
+    public async Task StartProduction_ShouldPublishDomainEvents()
+    {
+        // Arrange
+        var machineId = Guid.NewGuid();
+        var machine = new MachineBuilder()
+            .WithId(machineId)
+            .WithStatus(MachineStatus.Idle)
+            .Build();
+            
+        await Repository.AddAsync(machine);
+        await UnitOfWork.SaveChangesAsync();
+        
+        // Act
+        var command = new StartProductionCommand
+        {
+            MachineId = machineId,
+            RecipeId = Guid.NewGuid(),
+            BatchNumber = "BATCH-001",
+            OperatorName = "Test Operator"
+        };
+        
+        await Mediator.Send(command);
+        
+        // Assert
+        var events = GetPublishedDomainEvents<ProductionStartedEvent>();
+        Assert.AreEqual(1, events.Count);
+        Assert.AreEqual(machineId, events[0].MachineId);
+        
+        // Verify SignalR notification was sent
+        SignalRMock.Verify(x => x.SendAsync(
+            It.IsAny<string>(), 
+            It.IsAny<object>(), 
+            It.IsAny<CancellationToken>()), 
+            Times.Once);
+    }
+}
+```
+
+### 🧪 Behavior-Driven Development (BDD)
+
+```gherkin
+Feature: Machine Production Management
+  As a machine operator
+  I want to start and stop production
+  So that I can manufacture products according to recipes
+
+  Background:
+    Given I have a machine "CHOCO-001" in "Idle" status
+    And I have an approved recipe "Dark Chocolate Premium"
+    And I am logged in as "John Doe" with "Operator" role
+
+  Scenario: Start production with valid recipe
+    When I start production with recipe "Dark Chocolate Premium" and batch "BATCH-2024-001"
+    Then the machine status should be "Producing"
+    And the current recipe should be "Dark Chocolate Premium"
+    And a production started event should be published
+    And an audit log entry should be created
+
+  Scenario: Cannot start production when machine is offline
+    Given the machine "CHOCO-001" is in "Offline" status
+    When I try to start production with recipe "Dark Chocolate Premium"
+    Then I should receive an error "Cannot start production in Offline status"
+    And the machine status should remain "Offline"
+```
+
+## 📊 Performance & Monitoring
+
+### 🚀 Performance Metrics
+
+```csharp
+// Domain Performance Monitoring
+public class DomainMetrics
+{
+    private readonly IMetrics _metrics;
+    
+    public void RecordCommandExecution(string commandName, long elapsedMilliseconds)
+    {
+        _metrics.Measure.Histogram.Update(
+            new HistogramOptions
+            {
+                Name = "domain_command_duration",
+                Tags = new MetricTags("command", commandName),
+                MeasurementUnit = Unit.Milliseconds
+            },
+            elapsedMilliseconds);
+    }
+    
+    public void RecordDomainEvent(string eventName)
+    {
+        _metrics.Measure.Counter.Increment(
+            new CounterOptions
+            {
+                Name = "domain_events_published",
+                Tags = new MetricTags("event", eventName)
+            });
+    }
+    
+    public void RecordBusinessRuleViolation(string ruleName)
+    {
+        _metrics.Measure.Counter.Increment(
+            new CounterOptions
+            {
+                Name = "business_rule_violations",
+                Tags = new MetricTags("rule", ruleName)
+            });
+    }
+}
+```
+
+### 📈 Health Checks
+
+```csharp
+public class DomainHealthCheck : IHealthCheck
+{
+    public async Task<HealthCheckResult> CheckHealthAsync(
+        HealthCheckContext context, 
+        CancellationToken cancellationToken = default)
+    {
+        var data = new Dictionary<string, object>();
+        
+        try
+        {
+            // Check critical domain services
+            var activeMachines = await _machineRepository.CountAsync(m => m.IsActive);
+            var overdueMaintenance = await _machineRepository.CountAsync(m => m.IsMaintenanceDue());
+            var uncalibratedSensors = await _sensorRepository.CountAsync(s => s.IsCalibrationDue());
+            
+            data["activeMachines"] = activeMachines;
+            data["machinesRequiringMaintenance"] = overdueMaintenance;
+            data["sensorsRequiringCalibration"] = uncalibratedSensors;
+            
+            if (overdueMaintenance > 0 || uncalibratedSensors > 0)
+            {
+                return HealthCheckResult.Degraded(
+                    "Some machines or sensors require attention",
+                    data: data);
+            }
+            
+            return HealthCheckResult.Healthy("Domain model is healthy", data);
+        }
+        catch (Exception ex)
+        {
+            return HealthCheckResult.Unhealthy(
+                "Domain health check failed",
+                exception: ex,
+                data: data);
+        }
+    }
 }
 ```
 
 ## 🔧 Troubleshooting
 
-### ❌ Common Issues
+### ❌ Domain-Specific Issues
 
-#### 1. ModBus Communication Errors
+#### 1. Business Rule Violations
 **Symptoms:**
-- Connection timeouts
-- Invalid data readings
-- Communication failures
+- `InvalidOperationException` with business rule message
+- Commands rejected by domain logic
+- State transition failures
 
 **Solutions:**
-- Check cable connections
-- Verify baud rate settings
-- Ensure correct slave address
-- Test with ModBus simulator
-
-#### 2. Invalid Temperature Readings
-**Symptoms:**
-- Out-of-range values
-- Inconsistent readings
-- Sensor offline status
-
-**Solutions:**
-- Verify sensor wiring
-- Check for electromagnetic interference
-- Calibrate sensors if needed
-- Validate sensor configuration
-
-#### 3. Database Performance Issues
-**Symptoms:**
-- Slow query responses
-- High memory usage
-- Connection timeouts
-
-**Solutions:**
-- Ensure indexes are created
-- Implement data retention policy
-- Consider partitioning for large datasets
-- Monitor query performance
-
-### 🐛 Debug Logging
-
 ```csharp
-public class SensorLogger
+// Check preconditions before executing commands
+var machine = await _machineRepository.GetByIdAsync(machineId);
+
+// Verify business rules
+if (!machine.Status.CanStartProduction())
 {
-    private readonly ILogger<SensorLogger> _logger;
-    
-    public void LogReading(int sensorId, decimal value, bool isValid)
+    return Result.Failure($"Cannot start production in {machine.Status} status");
+}
+
+if (!recipe.IsApproved)
+{
+    return Result.Failure("Recipe must be approved before use in production");
+}
+
+// Safe to proceed
+machine.StartProduction(recipe, batchNumber, operatorName);
+```
+
+#### 2. Domain Event Processing
+**Symptoms:**
+- Events not being published
+- Event handlers not executing
+- Missing audit trails
+
+**Solutions:**
+```csharp
+// Ensure domain events are dispatched
+public class UnitOfWork : IUnitOfWork
+{
+    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        if (!isValid)
+        // Dispatch domain events before saving
+        await DispatchDomainEventsAsync();
+        
+        // Save changes to database
+        var result = await _context.SaveChangesAsync(cancellationToken);
+        
+        // Publish integration events after successful save
+        await PublishIntegrationEventsAsync();
+        
+        return result;
+    }
+    
+    private async Task DispatchDomainEventsAsync()
+    {
+        var domainEntities = _context.ChangeTracker
+            .Entries<BaseEntity>()
+            .Where(x => x.Entity.DomainEvents?.Any() == true)
+            .ToList();
+            
+        var domainEvents = domainEntities
+            .SelectMany(x => x.Entity.DomainEvents)
+            .ToList();
+            
+        domainEntities.ForEach(entity => entity.Entity.ClearDomainEvents());
+        
+        foreach (var domainEvent in domainEvents)
         {
-            _logger.LogWarning(
-                "Invalid reading from sensor {SensorId}: {Value}", 
-                sensorId, value);
-        }
-        else
-        {
-            _logger.LogDebug(
-                "Sensor {SensorId} reading: {Value}", 
-                sensorId, value);
+            await _mediator.Publish(domainEvent);
         }
     }
 }
 ```
 
-### 📋 Troubleshooting Checklist
+### 🐛 Debugging Domain Logic
 
-- [ ] ModBus connection established
-- [ ] Sensor addresses configured correctly
-- [ ] Database connection working
-- [ ] All services running
-- [ ] Logs showing normal operation
-- [ ] Sensor readings within expected ranges
+```csharp
+// Domain Debugging Extensions
+public static class DomainDebuggingExtensions
+{
+    public static void LogStateTransition(this Machine machine, MachineStatus newStatus, ILogger logger)
+    {
+        logger.LogInformation(
+            "Machine {MachineId} transitioning from {OldStatus} to {NewStatus}",
+            machine.Id,
+            machine.Status,
+            newStatus);
+    }
+    
+    public static void ValidateInvariants(this Machine machine)
+    {
+        if (machine.Status.Equals(MachineStatus.Producing) && machine.CurrentRecipe == null)
+        {
+            throw new InvalidOperationException(
+                "Invariant violation: Machine is producing but has no current recipe");
+        }
+        
+        if (machine.Status.Equals(MachineStatus.UnderMaintenance) && !machine.Status.Equals(MachineStatus.Offline))
+        {
+            throw new InvalidOperationException(
+                "Invariant violation: Machine under maintenance must be offline");
+        }
+    }
+}
+```
 
 ## 🤝 Contributing
 
-We welcome contributions from the community! Here's how you can help:
+### 🎯 Domain-Driven Development Guidelines
 
-### 🚀 Getting Started
+1. **Ubiquitous Language**: Use domain terms consistently
+   - ✅ `machine.StartProduction(recipe, batchNumber)`
+   - ❌ `machine.BeginManufacturing(formula, lotNumber)`
 
-1. **Fork the repository**
-2. **Create a feature branch**
-   ```bash
-   git checkout -b feature/amazing-feature
-   ```
-3. **Make your changes**
-4. **Add tests for new functionality**
-5. **Commit your changes**
-   ```bash
-   git commit -m "Add amazing feature"
-   ```
-6. **Push to the branch**
-   ```bash
-   git push origin feature/amazing-feature
-   ```
-7. **Open a Pull Request**
+2. **Aggregate Boundaries**: Respect aggregate roots
+   - ✅ Access sensors through machine: `machine.Sensors`
+   - ❌ Direct sensor modification: `sensor.Machine = newMachine`
 
-### 📝 Development Guidelines
+3. **Business Logic**: Keep in domain layer
+   - ✅ Validation in entity methods
+   - ❌ Business rules in controllers or services
 
-- **Code Style**: Follow C# coding conventions
-- **Testing**: Maintain >80% code coverage
-- **Documentation**: Update README and API docs
-- **Performance**: Consider performance implications
-- **Security**: Follow security best practices
+4. **Domain Events**: Raise for significant state changes
+   - ✅ `ProductionStartedEvent`, `MachineErrorOccurredEvent`
+   - ❌ `DataUpdatedEvent`, `PropertyChangedEvent`
 
-### 🐛 Reporting Issues
+### 📝 Code Review Checklist
 
-When reporting issues, please include:
-
-- **Description**: Clear description of the problem
-- **Steps to Reproduce**: Detailed reproduction steps
-- **Expected Behavior**: What you expected to happen
-- **Actual Behavior**: What actually happened
-- **Environment**: OS, .NET version, database version
-- **Logs**: Relevant error logs and stack traces
+- [ ] Domain logic is encapsulated in entities
+- [ ] Value objects are immutable
+- [ ] Aggregate boundaries are respected
+- [ ] Domain events are raised for significant changes
+- [ ] Business rules are enforced consistently
+- [ ] Tests cover domain behaviors
+- [ ] No anemic domain models
 
 ## 📄 License
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
-```
-MIT License
-
-Copyright (c) 2024 Nawaf Mahsoun
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
-
-## 📞 Contact & Support
-
-### 👨‍💻 Developer
-- **Name**: Nawaf Mahsoun
-- **Role**: .NET Developer & System Architect
-- **Specialization**: Industrial IoT & Chocolate Production Systems
-
-### 📧 Contact Information
-- **Email**: [your-email@domain.com]
-- **LinkedIn**: [your-linkedin-profile]
-- **Website**: [your-website]
-- **GitHub**: [@yourusername](https://github.com/yourusername)
-
-### 🆘 Support Options
-- **Community Support**: GitHub Issues & Discussions
-- **Documentation**: Comprehensive guides and tutorials
-- **Professional Support**: Enterprise support packages available
-- **Training**: Custom training and certification programs
+---
 
 ## 🌟 Acknowledgments
 
-- **DaireApplication Team**: Original system development
-- **Industrial IoT Community**: Standards and best practices
-- **Chocolate Industry**: Domain expertise and requirements
-- **Open Source Community**: Libraries and frameworks used
-
----
-
-## 🎯 Roadmap
-
-### 🚀 Version 2.0 (Q2 2024)
-- [ ] AI-powered predictive maintenance
-- [ ] Advanced analytics dashboard
-- [ ] Mobile application support
-- [ ] Cloud deployment options
-
-### 🚀 Version 3.0 (Q4 2024)
-- [ ] Multi-tenant architecture
-- [ ] Advanced machine learning
-- [ ] IoT edge computing support
-- [ ] Industry 4.0 compliance
-
----
-
-**Built with ❤️ for Industrial IoT and Chocolate Production**
-
-*NexusCore - Connecting Industry, One Sensor at a Time*
+- **Domain-Driven Design Community**: Eric Evans, Vaughn Vernon, and the DDD community
+- **Clean Architecture**: Robert C. Martin (Uncle Bob) for architectural principles  
+- **.NET Community**: Microsoft and the open-source contributors
+- **Industrial Automation Standards**: ISA, IEC, and Industry 4.0 initiatives
 
 ---
 
 <div align="center">
 
-**⭐ Star this repository if it helped you! ⭐**
+**⭐ Star this repository if you find it valuable! ⭐**
 
-**🤝 Join our community and help shape the future of industrial IoT!**
+**🚀 Built with Domain-Driven Design for Industrial Excellence 🚀**
+
+**NexusCore - Where Domain Logic Meets Industrial Innovation**
 
 </div>
